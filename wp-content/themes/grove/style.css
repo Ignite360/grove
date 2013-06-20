@@ -367,6 +367,7 @@ a:active {
 	padding:0 10px;
 }
 .main-navigation ul ul {
+    background: none repeat scroll 0 0 #fff;
 	-moz-box-shadow: 0 3px 3px rgba(0,0,0,0.2);
 	-webkit-box-shadow: 0 3px 3px rgba(0,0,0,0.2);
 	box-shadow: 0 3px 3px rgba(0,0,0,0.2);

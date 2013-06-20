@@ -49,6 +49,7 @@
 
 <div id="page" class="hfeed site">
 	<?php do_action( 'before' ); $header_image = get_header_image(); ?>
+<div id="masthead-outer">
 	<header id="masthead" class="site-header<?php if ( ! empty( $header_image ) ) { echo ' image'; }; ?>" role="banner" <?php if ( ! empty( $header_image ) ) { ?>style="height:<?php echo get_custom_header()->height; ?>px"<?php } ?>>
 
 		<div class="masthead-inner">
@@ -84,5 +85,5 @@
 		</div>
 
 	</header><!-- #masthead .site-header -->
-
+</div> <!-- #masthead-outer -->
 	<div id="main" class="site-main">
