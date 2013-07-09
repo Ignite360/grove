@@ -2,7 +2,7 @@
 /*
 Plugin Name: WP101
 Description: WordPress tutorial videos, delivered directly in the WordPress dashboard.
-Version: 2.0.4
+Version: 2.0.5
 Author: WP101Plugin.com
 Author URI: http://wp101plugin.com/
 */
@@ -310,6 +310,9 @@ class WP101_Plugin {
 
 	public function render_listing_page() {
 		$document_id = isset( $_GET['document'] ) ? sanitize_title( $_GET['document'] ) : 1;
+		while( $this->is_hidden( $document_id ) ) {
+			$document_id++;
+		}
 		if ( $document_id ) : ?>
 			<style>
 			div#wp101-topic-listing .page-item-<?php echo $document_id; ?> > span a {
