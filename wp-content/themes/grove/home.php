@@ -20,7 +20,9 @@ get_header(); ?>
 
 			<?php do_action( 'grove_home_after_slider' ); ?>
 
-			<?php get_template_part('hot', 'buttons'); ?> 
+			<?php get_template_part('mini', 'features'); ?>
+
+			<?php get_template_part('hot', 'buttons'); ?>  
 
 			<?php do_action( 'grove_home_after_hotbuttons' ); ?>
 
