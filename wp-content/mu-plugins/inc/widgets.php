@@ -2,7 +2,7 @@
 
 // support dashboard widget
 function support_dashboard_widget() {
-	echo "<p><a href='#'><img src='/wp-content/mu-plugins/inc/images/need-help.png' style='max-width:100%;'></a></p>";
+	echo "<p><a href='http://support.ignite360.com/index.php?/Tickets/Submit' target='_blank'><img src='/wp-content/mu-plugins/inc/images/need-help.png' style='max-width:100%;'></a></p>";
 }
 function add_support_dashboard_widget() {
 	wp_add_dashboard_widget('support_dashboard_widget', 'Grove Support', 'support_dashboard_widget');
