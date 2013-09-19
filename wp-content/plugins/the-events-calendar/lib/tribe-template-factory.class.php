@@ -222,7 +222,7 @@ if( !class_exists('Tribe_Template_Factory') ) {
 
 			// Search term based notices
 			if ( ! empty($search_term) && ! have_posts() ) {
-				TribeEvents::setNotice( 'event-search-no-results', sprintf( __( 'There  were no results found for <strong>"%s"</strong>.', 'tribe-events-calendar' ), $search_term ) );
+				TribeEvents::setNotice( 'event-search-no-results', sprintf( __( 'There  were no results found for <strong>"%s"</strong>.', 'tribe-events-calendar' ), esc_html($search_term) ) );
 			}
 
 			// Our various messages if there are no events for the query
@@ -232,9 +232,9 @@ if( !class_exists('Tribe_Template_Factory') ) {
 				if ( is_tax( $tribe_ecp->get_event_taxonomy() ) ) {
 					$cat = get_term_by( 'slug', get_query_var( 'term' ), $tribe_ecp->get_event_taxonomy() );
 					if( tribe_is_upcoming() ) {
-						$is_cat_message = sprintf( __( 'listed under %s. Check out past events for this category or view the full calendar.', 'tribe-events-calendar' ), $cat->name );
+						$is_cat_message = sprintf( __( 'listed under %s. Check out past events for this category or view the full calendar.', 'tribe-events-calendar' ), esc_html($cat->name) );
 					} else if( tribe_is_past() ) {
-						$is_cat_message = sprintf( __( 'listed under %s. Check out upcoming events for this category or view the full calendar.', 'tribe-events-calendar' ), $cat->name );
+						$is_cat_message = sprintf( __( 'listed under %s. Check out upcoming events for this category or view the full calendar.', 'tribe-events-calendar' ), esc_html($cat->name) );
 					}
 				}
 				if( tribe_is_day() ) {
@@ -550,11 +550,12 @@ if( !class_exists('Tribe_Template_Factory') ) {
 							break;
 					}
 
-					// Is there a core override file in the theme?
 					$styleUrl = trailingslashit( $tec->pluginUrl ) . 'resources/' . $event_file_option;
-					$styleUrl = TribeEventsTemplates::locate_stylesheet('tribe-events/'.$event_file, $styleUrl);
 					$styleUrl = self::getMinFile( $styleUrl, true );
 					$styleUrl = apply_filters( 'tribe_events_stylesheet_url', $styleUrl );
+
+					// Is there a core override file in the theme?
+					$styleOverrideUrl = TribeEventsTemplates::locate_stylesheet('tribe-events/'.$event_file, $styleUrl);
 
 					// Load up stylesheet from theme or plugin
 					if( $styleUrl && $stylesheet_option == 'tribe' ) {
@@ -563,6 +564,9 @@ if( !class_exists('Tribe_Template_Factory') ) {
 						wp_enqueue_style( TribeEvents::POSTTYPE . '-calendar-style', $styleUrl );
 					} else {
 						wp_enqueue_style( TribeEvents::POSTTYPE . '-calendar-style', $styleUrl );
+					}
+					if( $styleOverrideUrl ) {
+						wp_enqueue_style( TribeEvents::POSTTYPE . '-calendar-override-style', $styleOverrideUrl );		
 					}
 					break;
 				default :

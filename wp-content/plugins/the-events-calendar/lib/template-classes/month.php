@@ -46,6 +46,7 @@ if( !class_exists('Tribe_Events_Month_Template')){
 			}
 
 			self::$args = $args;
+			self::$posts_per_page_limit = apply_filters( 'tribe_events_month_day_limit', tribe_get_option( 'monthEventAmount', '3' ) );
 
 			if ( ! tribe_is_month() ) {
 				$this->asset_packages = array();
@@ -53,6 +54,32 @@ if( !class_exists('Tribe_Events_Month_Template')){
 
 			parent::__construct();
 		}
+
+		/**
+		 * Add any special hooks for this view
+		 *
+		 * @return void
+		 * @author Jessica Yazbek
+		 * @since 3.0.2
+		 **/
+		protected function hooks() {
+			parent::hooks();
+
+			// Since we set is_post_type_archive to true on month view, this prevents 'Events' from being added to the page title
+			add_filter('post_type_archive_title', '__return_false', 10);
+		}
+
+		/**
+		 * Unhook all the hooks set up on this view
+		 *
+		 * @return void
+		 * @author 
+		 **/
+		protected function unhook() {
+			parent::unhook();
+			remove_filter('post_type_archive_title', '__return_false', 10);
+		}
+
 
 		/**
 		 * Set the notices used on month view
@@ -72,7 +99,7 @@ if( !class_exists('Tribe_Events_Month_Template')){
 			$total_counts = array_unique(self::$event_daily_counts);
 
 			if( count($total_counts) < 2 && !empty($search_term)) {
-				TribeEvents::setNotice( 'event-search-no-results', sprintf( __( 'There were no results found for <strong>"%s"</strong> this month. Try searching next month.', 'tribe-events-calendar' ), $search_term ) );
+				TribeEvents::setNotice( 'event-search-no-results', sprintf( __( 'There were no results found for <strong>"%s"</strong> this month. Try searching next month.', 'tribe-events-calendar' ), esc_html( $search_term ) ) );
 			}
 		}
 

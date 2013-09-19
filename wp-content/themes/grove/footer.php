@@ -60,6 +60,10 @@
 		<p>Designed by <a href="http://ignite360.com"><img src="/wp-content/themes/grove/images/ignite360logo.png" width="75" height="16" alt="Ignite360" /></a></p>
 		</div>
 
+			<div class="credit">
+				<p>Designed by <a href="http://ignite360.com"><img src="/wp-content/themes/grove/ignite360logo.png" width="75" height="16" alt="Ignite360" /></a></p>
+			</div>
+
 	</footer><!-- #colophon .site-footer -->
 </div><!-- #page .hfeed .site -->
 

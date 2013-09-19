@@ -641,6 +641,23 @@ class WP_Customize_MiniFeature extends WP_Customize_Control {
 	'settings'   => 'hb_5_excerpt',
 	) ) );
 
+	$wp_customize->add_section( 'grove_home_banner_text', array(
+		'title'          => 'Homepage banner text',
+		'description'	 => 'What should the large banner say?',
+		'priority'       => 45,
+	) );
+
+	$wp_customize->add_setting( 'grove_home_banner_text_setting', array(
+		'default'        => '',
+		'type'		=> 'option',
+	) );
+
+	$wp_customize->add_control( 'grove_home_banner_text_setting', array(
+		'label'   => 'Homepage text',
+		'section' => 'grove_home_banner_text',
+		'type'    => 'text',
+	) );
+
 	$wp_customize->add_section( 'grove_slider_settings', array(
 		'title'          => 'Slider (Homepage)',
 		'description'	 => 'Manage the main slider on the homepage.',

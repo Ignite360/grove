@@ -162,6 +162,16 @@ if (!class_exists('TribeEventsTemplates')) {
 		}
 
 		/**
+		 * Filter to get rid of the default page title
+		 *
+		 * @param string $title Title
+		 * @return string Title
+		 */
+		public function remove_default_title( $title ) {
+			return '';
+		}
+
+		/**
 		 * This is where the magic happens where we run some ninja code that hooks the query to resolve to an events template.
 		 *
 		 * @param WP_Query $query
@@ -288,13 +298,6 @@ if (!class_exists('TribeEventsTemplates')) {
 			echo tribe_events_before_html();
 
 			tribe_get_view();
-
-			$after = tribe_get_option( 'tribeEventsAfterHTML' );
-			$after = wptexturize( $after );
-			$after = convert_chars( $after );
-			$after = wpautop( $after );
-			$after = shortcode_unautop( $after );
-			$after = apply_filters( 'tribe_events_after_html', $after );
 
 			echo tribe_events_after_html();
 
