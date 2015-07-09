@@ -47,23 +47,13 @@
 				'required'  => true,
 			),
 	 
-			array(
-				'name'	  => 'Make Clickable Tweet',
-				'slug'	  => 'make-clickable-tweet',
-				'required'  => true,
-			),
-			
+
 			array(
 				'name'	  => 'Social Bartender',
 				'slug'	  => 'social-bartender',
 				'required'  => true,
 			),
 			
-			array(
-				'name'	  => 'Symbol Setup',
-				'slug'	  => 'symbolsetup',
-				'required'  => false,
-			),
 			
 			array(
 				'name'	  => 'The Events Calendar',
@@ -80,6 +70,11 @@
 			array(
 				'name'	  => 'Simple Shortcodes',
 				'slug'	  => 'smpl-shortcodes',
+				'required'  => true,
+			),
+			array(
+				'name'	  => 'Simple Ecards',
+				'slug'	  => 'simple-ecards',
 				'required'  => true,
 			),
 	 

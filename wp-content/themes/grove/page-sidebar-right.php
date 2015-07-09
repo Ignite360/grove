@@ -26,7 +26,7 @@ if (has_post_thumbnail()) {
 			'title'	=> trim(strip_tags( get_the_title() )),
 		);
 
-if ($banner!='hide') { if ($banner=='large' OR $sidebar=='hide') { the_post_thumbnail('960', $attr); } else {$image = get_the_post_thumbnail($post->ID, '720', $attr);} } } ?>
+if ($banner!='hide') { if ($banner=='large' OR $sidebar=='hide') { the_post_thumbnail('full', $attr); } else {$image = get_the_post_thumbnail($post->ID, '1170', $attr);} } } ?>
 
 		<div id="primary" class="content-area ">
 			<div id="content" class="site-content " role="main">

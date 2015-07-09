@@ -3,13 +3,8 @@ Theme Name: Grove
 Author: faithHighway
 Author URI: http://faithhighway.com
 Description: A framework for better websites.
-Version: 1.5
+Version: 1170.1
 Tags:
-
-Resetting and rebuilding styles have been helped along thanks to the fine work of
-Eric Meyer http://meyerweb.com/eric/tools/css/reset/index.html
-along with Nicolas Gallagher and Jonathan Neal http://necolas.github.com/normalize.css/
-and Blueprint http://www.blueprintcss.org/
 
 */
 
@@ -368,9 +363,9 @@ a:active {
 #gr_mob_nav_trg_icon {
 	float:right;
 	width: 49px;
-	margin-top: -7px;
 	border-left: 1px solid #dfdfdf;
-	padding: 5px 0;
+	font-size: 140%;
+	text-align: center;
 }
 
 .footer-nav {
@@ -413,8 +408,11 @@ a:active {
 	left: 100%;
 	top: 0;
 }
-.main-navigation ul ul a, .footer-nav ul ul a {
+.main-navigation ul ul a {
 	white-space: nowrap;
+}
+.footer-nav ul ul a{
+	display: none;
 }
 .main-navigation ul ul li, .footer-nav ul ul li {
 	width: 100%;
@@ -587,9 +585,9 @@ object {
 .home #main{width:100%}
 
 #masthead{padding: 0 0 60px 0; position: relative; overflow: visible;}
-#masthead .social{position: absolute; top:0; right:0;}
+#masthead .social{position: absolute; bottom:0; right:0;}
 #masthead .social-middle{top:50%; margin-top: -8px;}
-#masthead .social-bottom{bottom:0; top:auto;}
+#masthead .social-top{top:0;bottom: auto;}
 #masthead .site-logo img{height: auto; width: auto; margin: 10px auto;}
 #masthead.image{padding:0;}
 #masthead.image .social-top{top:20px; right:20px;}
@@ -600,45 +598,71 @@ object {
 .social a{margin:0 5px 0 0;}
 .social a:last-child{margin: 0;}
 
-.slider-outer{clear:both;}
-.small-slider-outer{width:960px; margin:0 auto;}
-.slider{width: 960px; margin: 0 auto;max-width: 100%;}
-.slider.half{width:480px; float: right;}
+.slider-outer{clear:both;max-width: 1170px;margin: 0 auto;}
+.small-slider-outer{max-width:1170px; margin:0 auto;}
+.slider{max-width: 1170px; margin: 0 auto;max-width: 100%;}
+.slider.half{width:585px; float: right;}
 .wooslider p{margin: 0;}
 .wooslider{border:none !important;}
 .wooslider.wooslider-type-slides img{height:auto !important;}
 .wooslider .slide-content{margin: 0 !important;}
 .wooslider-direction-nav .wooslider-next { right: 0px !important;}
 
+/* None overlay enabled */
+	body .wooslider .overlay-none.layout-text-left .slide-excerpt { display: none; }
+	body .wooslider .overlay-none.layout-text-right .slide-excerpt { display: none; }
+	body .wooslider .overlay-none.layout-text-right .slide-excerpt .slide-title,
+	body .wooslider .overlay-none.layout-text-right .slide-excerpt p { display: none; }
+	body .wooslider .overlay-none.layout-text-top .slide-excerpt { display: none; }
+	body .wooslider .overlay-none.layout-text-bottom .slide-excerpt { display: none; }
+
+	.wooslider .layout-text-left img {width: 100%;}
+	.wooslider .layout-text-right img {width: 100%;}
+	.wooslider .layout-text-top img{width: 100%;}
+	.wooslider .layout-text-bottom img {width: 100%;}
+
 .banner-outer{background: #ccc; border-top: 3px solid #333; border-bottom: 3px solid #333; margin-bottom: 15px;margin-top: 15px;}
-.banner-inner{margin: 0 auto; max-width: 960px;text-align: center; padding: 20px;}
+.banner-inner{margin: 0 auto; max-width: 1170px;text-align: center; padding: 20px;}
 .banner-inner h1{font-size: 150%;color: #fff; text-shadow: 2px 2px #333;}
 
-.hotbuttons{width:960px; clear: both; overflow: auto; margin: 0 auto 30px auto;max-width: 100%;}
-.hotbuttons a{width: 300px; overflow: hidden; margin-right: 3%; display: inline-block; float: left;}
+.hotbuttons{max-width:1170px; clear: both; overflow: auto; margin: 0 auto 30px auto;}
+.hotbuttons a{width: 49%; overflow: hidden; display: inline-block; float: left;}
 .hotbuttons a:last-child{margin:0;}
-.hotbuttons a img{max-width: 300px; display: block;}
+.hotbuttons a img{max-width: 100%; display: block;}
 .hotbuttons a strong{display: block; font-size: 140%; margin: 10px 0 0 0;}
 .hotbuttons a span{color:#666; display: block; margin: 10px 0 0 0;}
-.hotbuttons-4 a{width:225px;max-width: 22%;}
-.hotbuttons-4 a img{width: 225px;max-width: 100%;}
-.hotbuttons-5 a{width:176px; margin-right: 20px;}
-.hotbuttons-5 a img{max-width: 176px;}
-.hotbuttons-2 a{width:465px; margin-right: 30px;}
-.hotbuttons-2 a img{max-width: 465px;}
+.hotbuttons-2 a{width:49%; margin-right: 2%;}
+.hotbuttons-3 a{width:32%; margin-right: 2%;}
+.hotbuttons-4 a{width:23.5%; margin-right: 2%;}
+.hotbuttons-5 a{width:18.4%; margin-right: 2%;}
 
-.homepage-features{float:left; width: 450px; margin: 0 0 60px 0;}
+
+.minifeatures{max-width:1170px; clear: both; overflow: auto; margin: 0 auto 30px auto;}
+.minifeatures a{width: 49%; overflow: hidden;display: inline-block; float: left;}
+.minifeatures a:last-child{margin:0;}
+.minifeatures a img{max-width: 100%; display: block;}
+.minifeatures a strong{display: block; font-size: 140%; margin: 10px 0 0 0;}
+.minifeatures a span{color:#666; display: block; margin: 10px 0 0 0;}
+.minifeatures-2 a{width:49%; margin-right: 2%;}
+.minifeatures-3 a{width:32%; margin-right: 2%;}
+.minifeatures-4 a{width:23.5%; margin-right: 2%;}
+.minifeatures-5 a{width:18.4%; margin-right: 2%;}
+
+
+
+.homepage-features{float:left; width: 555px; margin: 0 0 60px 0;}
 .homepage-features h2{font-size: 180%; font-weight: bold; margin: 0 0 0.5em 0;}
 .homepage-features a.button{margin-top: 0;}
 a.button{background:blue; border-radius:3px; padding:10px 15px; font-weight:bold; display:inline-block; color:#fff; margin-top: 1.5em;}
 
 .homepage-featured-content-outer{width:100%;}
-.homepage-featured-content{width:960px; margin: 0 auto; clear: both; overflow: hidden; background: rgba(0,0,0,0.2); border-radius:3px; margin-top:30px; padding: 30px;}
+.homepage-featured-content{max-width:1170px; margin: 0 auto; clear: both; overflow: hidden; background: rgba(0,0,0,0.2); border-radius:3px; margin-top:30px; padding: 30px;}
 .homepage-featured-content h1{font-weight: bold; font-size: 150%; color:#fff;}
-.homepage-featured-content aside{float:left; width:280px; margin:0 30px 0 0;}
-.homepage-featured-content.widgets-2 aside{width:465px; margin-right: 30px;}
-.homepage-featured-content.widgets-4 aside{width:210px; margin-right: 20px;}
-.homepage-featured-content.widgets-5 aside{width:164px; margin-right: 20px;}
+.homepage-featured-content aside{float:left; width:100%;}
+.homepage-featured-content.widgets-2 aside{width:49%; margin-right: 2%;}
+.homepage-featured-content.widgets-3 aside{width:32%; margin-right: 2%;}
+.homepage-featured-content.widgets-4 aside{width:23.5%; margin-right: 2%;}
+.homepage-featured-content.widgets-5 aside{width:18.4%; margin-right: 2%;}
 .homepage-featured-content aside:last-child{margin-right: 0;}
 .homepage-featured-content .widget_text p{margin:1.0em 0;}
 
@@ -658,11 +682,15 @@ footer.site-footer .social{position: absolute; top:0; right:0;}
 footer.site-footer .social-middle{top:50%; margin-top: -8px;}
 footer.site-footer .social-bottom{bottom:0; top:auto;}
 footer.site-footer .footer-text{margin-bottom: 30px;}
-.footer-widgets{overflow: auto;}
-.footer-widgets aside{float:left; width:300px; margin-right: 30px;}
+.footer-widgets{overflow: auto;margin: 20px auto;}
 .footer-widgets .widget-title{font-weight: bold; margin-bottom: 1.0em;}
-.footer-widgets.widgets-4 aside{width:225px; margin-right: 20px;}
-.footer-widgets.widgets-5 aside{width:172px; margin-right: 20px;}
+.footer-widgets aside{float:left; width:100%;}
+.footer-widgets.widgets-2 aside{width:49%; margin-right: 2%;}
+.footer-widgets.widgets-3 aside{width:32%; margin-right: 2%;}
+.footer-widgets.widgets-4 aside{width:23.5%; margin-right: 2%;}
+.footer-widgets.widgets-5 aside{width:18.4%; margin-right: 2%;}
+.footer-widgets.widgets-6 aside{width:14.4%; margin-right: 2%;}
+.footer-widgets.widgets-7 aside{width:12.4%; margin-right: 2%;}
 .footer-widgets aside:last-child{margin-right: 0;}
 .footer-widgets ul{list-style:none; padding: 0; margin:0;}
 .footer-widgets ul li a{display: block; margin: 5px 0; padding: 0 0 5px 0; border-bottom: 1px solid #ddd;}
@@ -673,12 +701,12 @@ footer.site-footer .footer-text{margin-bottom: 30px;}
 .wooslider-control-paging li a{background:rgba(0,0,0,0.2);}
 
 .tweets-container-outer{}
-.tweets-container{margin:0 auto 30px auto; width: 960px; max-width: 95%; overflow: hidden; clear: both;}
+.tweets-container{margin:0 auto 30px auto; max-width: 1170px; overflow: hidden; clear: both;}
 .follow-button{color: #4099FF; font-weight: bold; font-size: 16px; background: rgba(0,0,0,0.1); display: block; width: 30%; height: 50px; line-height: 50px; float: right; text-align: center; padding: 0 2%; -webkit-border-radius: 0 3px 3px 0; border-radius: 0 3px 3px 0;}
 .follow-button i{font-size: 34px; float: left; position: relative; top:5px; left: 5px; color: #aaa;}
-.tweetscroll { width: 660px; height: 50px; overflow: hidden;display: none;}
+.tweetscroll { width: 100%; height: 50px; overflow: hidden;display: none;}
 .tickercontainer { width: 70%; height: 50px; margin: 0; overflow: hidden; float: left;}
-.tickercontainer .mask { position: relative;left: 0px;top: 0px;width: 660px;overflow: hidden;height: 50px; background: #fff;border:1px solid #ddd;-webkit-border-radius: 3px 0px 0px 3px; border-radius: 3px 0px 0px 3px; }
+.tickercontainer .mask { position: relative;left: 0px;top: 0px;width: 100%;overflow: hidden;height: 50px; background: #fff;border:1px solid #ddd;-webkit-border-radius: 3px 0px 0px 3px; border-radius: 3px 0px 0px 3px; }
 ul.tweetscroll { position: relative;left: 665px;font-size:14px;font-weight: bold;list-style-type: none;margin: 0;padding: 0;}
 ul.tweetscroll li {float: left;margin: 0 25px 0 0;padding: 0;height: 50px;line-height: 50px;color: #666;}
 ul.tweetscroll li .tweet-stamp{	font-size:12px;	font-weight: normal;}
@@ -710,20 +738,6 @@ ul.tweetscroll li .tweet-stamp{	font-size:12px;	font-weight: normal;}
 .full-page-content{margin-right:0px !important;}
 
 
-.minifeatures{width:960px; clear: both; overflow: auto; margin: 0 auto 30px auto;}
-.minifeatures a{width: 300px; overflow: hidden; margin-right: 30px; display: inline-block; float: left;}
-.minifeatures a:last-child{margin:0;}
-.minifeatures a img{max-width: 300px; display: block;}
-.minifeatures a strong{display: block; font-size: 140%; margin: 10px 0 0 0;}
-.minifeatures a span{color:#666; display: block; margin: 10px 0 0 0;}
-.minifeatures-4 a{width:225px; margin-right: 20px;}
-.minifeatures-4 a img{max-width: 225px;}
-.minifeatures-5 a{width:176px; margin-right: 20px;}
-.minifeatures-5 a img{max-width: 176px;}
-.minifeatures-2 a{width:465px; margin-right: 30px;}
-.minifeatures-2 a img{max-width: 465px;}
-
-
 .credit{float: right; padding: 10px;}
 .credit img{vertical-align: middle;}
 .credit p{font-style: italic; font-size: 85%;}
@@ -734,17 +748,22 @@ ul.tweetscroll li .tweet-stamp{	font-size:12px;	font-weight: normal;}
 /* COUNTDOWN */
 
 #timer {
-	background:#00d5d2;
-	color:#fff;
-	padding: 20px 20px 10px 20px;
-	font-weight: bold;
-	line-height: 26px;
+	position: absolute;
+	right: 0;
+	background:#E6BE8A;
+	color:#AF1E2C;
+	line-height: 20px;
 	text-align: center;
+	padding: 10px;
 }
 
 #timer a {
 	color:#fff;
 }
+#timer .widget {
+    margin: 0 auto;
+}
+div.tribe-countdown-text{display: none;}
 
 /* jQuery Countdown styles 1.6.3. */
 .hasCountdown {
@@ -807,6 +826,14 @@ ul.tweetscroll li .tweet-stamp{	font-size:12px;	font-weight: normal;}
 	#page{
 		max-width: 95%;
 	}
+	#timer {
+	position: relative;
+	width: 100%;
+	}
+	#timer .widget {
+    margin: 0 auto;
+    max-width: 220px;
+	}
 	#gr_mob_nav_trg {
 		display:block;	
 	}
@@ -818,5 +845,48 @@ ul.tweetscroll li .tweet-stamp{	font-size:12px;	font-weight: normal;}
 	#primary, #content {
 		margin-right:0px !important;
 	}
+	.small-slider-outer{width:100%; 
+	}
+	.slider{width: 100%;
+	}
+	.banner-inner{width: 100%;
+	}
+	.minifeatures{width: 100%;
+	}
+	.hotbuttons{width:100%;
+	}
+	.tweets-container{width: 100%;
+	}
+	.homepage-featured-content{width:100%;
+	}
 	
 }
+@media screen and (max-width: 480px) {
+	.minifeatures-2 a, 
+	.minifeatures-3 a, 
+	.minifeatures-4 a, 
+	.minifeatures-5 a{width:100%; margin: 0;
+	}
+	.hotbuttons-2 a, 
+	.hotbuttons-3 a, 
+	.hotbuttons-4 a, 
+	.hotbuttons-5 a{width:100%; margin: 0;
+	}
+	.homepage-featured-content.widgets-2 aside,
+	.homepage-featured-content.widgets-3 aside,
+	.homepage-featured-content.widgets-4 aside,
+	.homepage-featured-content.widgets-5 aside{width: 100%;
+	}
+
+	.footer-widgets.widgets-2 aside,
+	.footer-widgets.widgets-3 aside,
+	.footer-widgets.widgets-4 aside,
+	.footer-widgets.widgets-5 aside,
+	.footer-widgets.widgets-6 aside,
+	.footer-widgets.widgets-7 aside{width: 100%;
+	}
+	.footer-nav li {
+		width: 100%;
+	}
+}
+	
