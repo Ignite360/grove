@@ -11,8 +11,11 @@ class Tribe__Events__Pro__Custom_Meta {
 		add_action( 'wp_ajax_remove_option', array( __CLASS__, 'remove_meta_field' ) );
 		add_action( 'tribe_settings_after_content_tab_additional-fields', array( __CLASS__, 'event_meta_options' ) );
 		add_action( 'tribe_events_details_table_bottom', array( __CLASS__, 'single_event_meta' ) );
-		add_action( 'tribe_events_update_meta', array( __CLASS__, 'save_single_event_meta' ) );
+		add_action( 'tribe_events_update_meta', array( __CLASS__, 'save_single_event_meta' ), 10, 2 );
 		add_filter( 'tribe_settings_validate_tab_additional-fields', array( __CLASS__, 'force_save_meta' ) );
+		add_filter( 'tribe_events_csv_import_event_additional_fields', array( __CLASS__, 'import_additional_fields' ) );
+		add_filter( 'tribe_events_importer_event_column_names', array( __CLASS__, 'importer_column_mapping' ) );
+
 	}
 
 	/**
@@ -54,7 +57,7 @@ class Tribe__Events__Pro__Custom_Meta {
 		$remove_field = esc_html( __( 'Remove', 'tribe-events-calendar-pro' ) );
 
 		// Settings for regular WordPress custom fields
-		$disable_metabox_custom_fields = $pro->displayMetaboxCustomFields() ? "show" : "hide";
+		$disable_metabox_custom_fields = $pro->displayMetaboxCustomFields() ? 'show' : 'hide';
 
 		include $pro->pluginPath . 'src/admin-views/event-meta-options.php';
 	}
@@ -83,31 +86,58 @@ class Tribe__Events__Pro__Custom_Meta {
 	 * saves the custom fields for a single event
 	 *
 	 * @param $postId
+	 * @param $data
 	 *
 	 * @return void
+	 * @see 'tribe_events_update_meta'
 	 */
-	public static function save_single_event_meta( $postId ) {
+	public static function save_single_event_meta( $postId, $data = array() ) {
 		$customFields = (array) tribe_get_option( 'custom-fields' );
-
 		foreach ( $customFields as $customField ) {
 			if ( isset( $customField['name'] ) ) {
-				if ( ! isset( $_POST[ $customField['name'] ] ) ) {
-					$_POST[ $customField['name'] ] = '';
+				$val = self::get_value_to_save( $customField['name'], $data );
+
+				if ( is_array( $val ) ) {
+					$val = esc_attr( implode( '|', str_replace( '|', '', $val ) ) );
+				} else {
+					$val = wp_kses(
+						$val,
+						array(
+							'a' => array(
+								'href'   => array(),
+								'title'  => array(),
+								'target' => array(),
+							),
+							'b'      => array(),
+							'i'      => array(),
+							'strong' => array(),
+							'em'     => array(),
+						)
+					);
 				}
-				$val = $_POST[ $customField['name'] ];
-				$val = is_array( $val ) ? esc_attr( implode( "|", $val ) ) : wp_kses( $val, array( 'a'      => array(
-						'href'   => array(),
-						'title'  => array(),
-						'target' => array()
-					),
-				                                                                                   'b'      => array(),
-				                                                                                   'i'      => array(),
-				                                                                                   'strong' => array(),
-				                                                                                   'em'     => array()
-					) );
+
 				update_post_meta( $postId, wp_kses_data( $customField['name'] ), $val );
 			}
 		}
+	}
+
+	/**
+	 * Checks passed metadata array for a custom field, returns its value
+	 * If the value is not found in the passed array, checks the $_POST for the value
+	 *
+	 * @param $name
+	 * @param $data
+	 *
+	 * @return string
+	 */
+	private static function get_value_to_save( $name, $data ) {
+		$value = '';
+		if ( ! empty( $data ) && ! empty( $data[ $name ] ) ) {
+			$value = $data[ $name ];
+		} elseif ( ! empty( $_POST[ $name ] ) ) {
+			$value = $_POST[ $name ];
+		}
+		return $value;
 	}
 
 	/**
@@ -118,6 +148,36 @@ class Tribe__Events__Pro__Custom_Meta {
 		$options = Tribe__Events__Main::getOptions();
 		$options = self::save_meta_options( $options );
 		Tribe__Events__Main::instance()->setOptions( $options );
+	}
+
+	/**
+	 * add custom meta fields to the event array passed thru the importer
+	 */
+	public static function import_additional_fields( $import_fields ) {
+		$custom_fields = (array) tribe_get_option( 'custom-fields' );
+		foreach ( $custom_fields as $custom_field ) {
+			$import_fields[ $custom_field['name'] ] = $custom_field['label'];
+		}
+		return $import_fields;
+	}
+
+	/**
+	 * add custom meta fields to the column mapping passed to the importer
+	 */
+	public static function importer_column_mapping( $column_mapping ) {
+		$custom_fields = (array) tribe_get_option( 'custom-fields' );
+		foreach ( $custom_fields as $custom_field ) {
+			if (
+				! is_array( $custom_field )
+				|| empty( $custom_field['name'] )
+				|| ! isset( $custom_field['label'] )
+			) {
+				continue;
+			}
+
+			$column_mapping[ $custom_field['name'] ] = $custom_field['label'];
+		}
+		return $column_mapping;
 	}
 
 	/**
@@ -143,19 +203,21 @@ class Tribe__Events__Pro__Custom_Meta {
 		$ecp_options['disable_metabox_custom_fields'] = $_POST['disable_metabox_custom_fields'];
 
 		foreach ( $_POST['custom-field'] as $index => $field ) {
-			$name   = strip_tags( $_POST['custom-field'][ $index ] );
+			$name   = wp_kses( stripslashes( $_POST['custom-field'][ $index ] ), array() );
 			$type   = 'text';
 			$values = '';
 
 			// For new fields, it's possible the type/value hasn't been defined (fallback to defaults if so)
 			if ( isset( $_POST['custom-field-type'][ $index ] ) ) {
-				$type   = strip_tags( $_POST['custom-field-type'][ $index ] );
-				$values = strip_tags( $_POST['custom-field-options'][ $index ] );
+				$type   = wp_kses( stripslashes( $_POST['custom-field-type'][ $index ] ), array() );
+				$values = wp_kses( stripslashes( $_POST['custom-field-options'][ $index ] ), array() );
 			}
 
 			// Remove empty lines
 			$values = preg_replace( "/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\r\n", $values );
 			$values = rtrim( $values );
+			//Remove Vertical Bar for Checkbox Field
+			$values = $type == 'checkbox' ? str_replace( '|', '', $values ) : $values;
 
 			// The indicies of pre-existing custom fields begin with an underscore - so if
 			// the index does not have an underscore we need to assign a new one
@@ -170,7 +232,7 @@ class Tribe__Events__Pro__Custom_Meta {
 					'name'   => '_ecp_custom_' . $assigned_index,
 					'label'  => $name,
 					'type'   => $type,
-					'values' => $values
+					'values' => $values,
 				);
 			}
 		}

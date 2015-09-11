@@ -166,6 +166,8 @@ class Tribe__Events__Pro__Recurrence__Queue_Processor {
 		$this->current_queue->save();
 		$this->current_queue->clear_in_progress_flag();
 
+		Tribe__Events__Main::instance()->rebuild_known_range();
+
 		return true;
 	}
 
@@ -179,7 +181,7 @@ class Tribe__Events__Pro__Recurrence__Queue_Processor {
 			$this->current_queue = new Tribe__Events__Pro__Recurrence__Queue( $this->current_event_id );
 		}
 		catch ( Exception $e ) {
-			do_action( 'log', sprintf( __( 'Could not process queue for event %d: %s', 'tribe-events-pro' ), $this->current_event_id, $e->getMessage() ) );
+			do_action( 'log', sprintf( __( 'Could not process queue for event %1$d: %2$s', 'tribe-events-pro' ), $this->current_event_id, $e->getMessage() ) );
 			return false;
 		}
 
@@ -233,8 +235,12 @@ class Tribe__Events__Pro__Recurrence__Queue_Processor {
 			if ( $this->batch_complete() ) {
 				break;
 			}
-			// Some instances may deliberately have been removed - let's not recreate them
+
+			// Some instances may deliberately have been removed - let's remove
+			// them from the list of events to create and move on
 			if ( in_array( $start_date, $exclusions ) ) {
+				unset( $instances_to_create[ $key ] );
+				$this->processed++;
 				continue;
 			}
 
