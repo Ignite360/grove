@@ -1568,6 +1568,24 @@ class WP_Customize_MiniFeature extends WP_Customize_Control {
 		'priority'       => 106,
 	) );
 
+	$wp_customize->add_setting( 'slide_page', array(
+		'default'        => '',
+		'type'	=> 'option',
+	) );
+
+	$slide_categories = get_terms("slide-page"); 
+			foreach ( $slide_categories as $cat ) {
+			$slides[$cat->slug] = $cat->name;
+			 };
+
+	$wp_customize->add_control( 'slide_page', array(
+	'label'   => 'Choose Slide Group (Slideshows)',
+	'section' => 'grove_slider_settings',
+	'type'    => 'select',
+	'choices'    => $slides,
+	'priority' => 2, 
+	) );
+
 
 	$wp_customize->add_setting( 'slide_num', array(
 	'default'        => '',
