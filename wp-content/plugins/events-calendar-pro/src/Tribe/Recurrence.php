@@ -6,6 +6,7 @@
 class Tribe__Events__Pro__Recurrence {
 	const NO_END = -1;
 	private $start_date;
+	private $duration;
 	private $end;
 	/** @var Tribe__Events__Pro__Date_Series_Rules__Rules_Interface */
 	private $series_rules;
@@ -15,20 +16,22 @@ class Tribe__Events__Pro__Recurrence {
 	private $maxDate = 2147483647; // Y2K38, an arbitrary limit. TODO: revisit this in twenty years
 	private $last_request_constrained = false;
 
-	public function  __construct( $start_date, $end, $series_rules, $by_occurrence_count = false, $event = null, $start_time = null, $end_time = null ) {
+	public function  __construct( $start_date, $end, $series_rules, $by_occurrence_count = false, $event = null, $start_time = null, $duration = null ) {
 		$this->start_date          = $start_date;
 		$this->end                 = $end;
 		$this->series_rules        = $series_rules;
 		$this->by_occurrence_count = $by_occurrence_count;
 		$this->event               = $event;
 		$this->start_time          = $start_time;
-		$this->end_time            = $end_time;
+		$this->duration            = $duration;
 	}
 
 	/**
 	 * Adjusts the start time of a date
 	 *
 	 * @param timestamp $date Date timestamp to adjust
+	 *
+	 * @return timestamp
 	 */
 	public function adjust_start_time( $date ) {
 		if ( ! $this->start_time ) {
@@ -50,10 +53,15 @@ class Tribe__Events__Pro__Recurrence {
 	}
 
 	/**
-	 * Using the rules engine, find all dates in the series
+	 * Using the rules engine, find all dates in the series.
 	 *
-	 * @param bool  $all_events      Return ALL instances?
-	 * @param array $old_start_dates The old start dates for an event.
+	 * Each individual date is represented by an array structured as:
+	 *
+	 *     [ "timestamp" => int,
+	 *       "duration"  => int ]
+	 *
+	 * If the duration is -1 then it can be taken as equal to the parent event's
+	 * duration.
 	 *
 	 * @return array An array of all dates in the series
 	 */
@@ -66,6 +74,7 @@ class Tribe__Events__Pro__Recurrence {
 			$i = 0;
 			while ( $cur_date = $this->getNextDate( $cur_date ) ) {
 				$i ++;
+
 				if ( $cur_date > $this->maxDate ) {
 					$this->last_request_constrained = $cur_date;
 					break; // no more dates will be in range. stop here
@@ -77,7 +86,10 @@ class Tribe__Events__Pro__Recurrence {
 					break; // end of the series
 				}
 
-				$dates[] = $this->adjust_start_time( $cur_date );
+				$dates[] = array(
+					'timestamp' => $this->adjust_start_time( $cur_date ),
+					'duration'  => $this->duration,
+				);
 			}
 
 			return $dates;
@@ -89,6 +101,7 @@ class Tribe__Events__Pro__Recurrence {
 	/**
 	 * Flag indicating if the last getDates() request was constrained
 	 * by the max date setting
+	 *
 	 * @return bool
 	 */
 	public function constrainedByMaxDate() {
@@ -108,7 +121,7 @@ class Tribe__Events__Pro__Recurrence {
 			return false;
 		}
 		// Makes sure to assign the proper hours to the date.
-		$next_date = mktime( date( 'H', $this->start_date ), date( 'i', $this->start_date ), date( 's', $this->start_date ), date( 'n', $next_date ), date( 'j', $next_date ), date( 'Y', $next_date ) );
+		$next_date     = mktime( date( 'H', $this->start_date ), date( 'i', $this->start_date ), date( 's', $this->start_date ), date( 'n', $next_date ), date( 'j', $next_date ), date( 'Y', $next_date ) );
 
 		return $next_date;
 	}

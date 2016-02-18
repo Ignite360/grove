@@ -50,6 +50,7 @@ class WooSlider_Frontend {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_footer', array( $this, 'load_slider_javascript' ), 11 );
+		add_action( 'wp_footer', array( $this, 'maybe_load_slider_assets' ), 12 );
 		add_filter( 'wooslider_slider_settings', array( $this, 'generate_slider_carousel_settings_javascript' ), 10, 4 );
 		add_filter( 'oembed_result', array( $this,'oembed_video_output'), 10, 3 );
 		add_filter( 'wooslider_callback_start', array( $this, 'wooslider_javascript_slide_load' ) );
@@ -565,11 +566,8 @@ class WooSlider_Frontend {
 
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		wp_register_script( $this->token . '-mousewheel', esc_url( $wooslider->plugin_url . 'assets/js/jquery.mousewheel' . $suffix . '.js' ), array( 'jquery' ), '2.1.0-20121206', true );
-		wp_register_script( $this->token . '-flexslider', esc_url( $wooslider->plugin_url . 'assets/js/jquery.flexslider' . $suffix . '.js' ), array( 'jquery', $this->token . '-mousewheel' ), '2.2.0-20121206', true );
+		wp_register_script( $this->token . '-flexslider', esc_url( $wooslider->plugin_url . 'assets/js/jquery.flexslider' . $suffix . '.js' ), array( 'jquery', $this->token . '-mousewheel' ), '2.4.0-20150227', true );
 		wp_register_script( $this->token . '-fitvids', esc_url( $wooslider->plugin_url . 'assets/js/jquery.fitvids.js' ), array( 'jquery' ), '2.1.0-20121206', true );
-
-		wp_enqueue_script( $this->token . '-flexslider' );
-		wp_enqueue_script( $this->token . '-fitvids' );
 	} // End enqueue_scripts()
 
 	/**
@@ -628,6 +626,18 @@ class WooSlider_Frontend {
 		}
 		return $theme;
 	} // End get_theme_data()
+
+	/**
+	 * Maybe load slideshow assets, if there are slideshows present.
+	 * @since  2.3.0
+	 * @return void
+	 */
+	public function maybe_load_slider_assets () {
+		if ( isset( $this->sliders->sliders ) && ( 0 < $this->sliders->sliders ) ) {
+			wp_enqueue_script( $this->token . '-flexslider' );
+			wp_enqueue_script( $this->token . '-fitvids' );
+		}
+	} // End maybe_load_slider_assets()
 
 	/**
 	 * Maybe load stylesheets for the themes in use.

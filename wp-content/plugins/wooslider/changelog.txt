@@ -1,5 +1,25 @@
 *** WooSlider Changelog ***
 
+2015.11.11 - version 2.3.0
+ * Tweak - Ensures the necessary JavaScripts load only if slideshows are present on the current screen.
+   /classes/class-wooslider-frontend.php
+ * New - Add option to choose the content type for your slides when selecting a slider type of Posts
+   /classes/class-wooslider-admin.php,
+   /classes/class-wooslider-sliders.php
+ * Update - Updated to use the latest version of FlexSlider, 2.6.0, various under the hood fixes and improvements.
+   assets/js/jquery.flexslider.js
+
+2015.06.23 - version 2.2.2
+ * Tweak - modifies how the image size choice works so that all registered image sizes are shown as an option.
+
+2015.06.12 - version 2.2.1
+ * Update - Updated to use the latest version of FlexSlider, 2.5.0, various under the hood fixes and improvements.
+   assets/js/jquery.flexslider.js
+
+2015.02.27 - version 2.2.0
+ * Update - Updated to use the latest version of FlexSlider, 2.4.0, various fixes and improvements.
+   assets/js/jquery.flexslider.js
+
 2014.07.31 - version 2.1.0
  * Fix - Fix issue with PHP noticed being shown when adding a slider via the Add Media screen.
    classes/class-wooslider-sliders.php

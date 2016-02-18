@@ -2,7 +2,7 @@
 Contributors: DaganLev
 Tags: Solid Code, Dagan Lev, Bulk Page Creator, batch action, add pages, add posts
 Requires at least: 3.1
-Tested up to: 3.1
+Tested up to: 4.1
 Stable tag: trunk
 
 Allows you to create multiple pages in a batch/bulk manner saving time when initially setting up your WordPress site
@@ -43,6 +43,16 @@ Amended potential issue with safari and draft pages in JavaScript
 = 1.0.7 =
 Added script to add pages in the page section when accedently submitting form
 
+= 1.0.8 =
+Added template support - if templates exist in the theme will create a template dropdown to choose from when adding pages
+
+= 1.0.9 =
+Added support for HTTPS logins
+
 == Screenshots ==
 
 1. View of bulk page creator screen
+
+== Upgrade Notice ==
+
+Added support for HTTPS logins

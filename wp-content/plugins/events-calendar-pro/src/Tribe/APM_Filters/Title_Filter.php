@@ -11,9 +11,9 @@
 
 		public function __construct() {
 			$this->query_search_options = array(
-				'like' => __( 'Search', 'tribe-events-calendar-pro' ),
-				'is' => __( 'Is', 'tribe-events-calendar-pro' ),
-				'not' => __( 'Is Not', 'tribe-events-calendar-pro' ),
+				'like' => esc_html__( 'Search', 'tribe-events-calendar-pro' ),
+				'is' => esc_html__( 'Is', 'tribe-events-calendar-pro' ),
+				'not' => esc_html__( 'Is Not', 'tribe-events-calendar-pro' ),
 				'gt' => '>',
 				'lt' => '<',
 				'gte' => '>=',
@@ -49,8 +49,16 @@
 		}
 
 		public function maybe_set_active( $return, $key, $filter ) {
-			if ( isset( $_POST[ $this->key ] ) && ! empty( $_POST[ $this->key ] ) && isset( $_POST[ $this->is_key ] ) && ! empty( $_POST[ $this->is_key ] ) ) {
+			global $ecp_apm;
+
+			if ( ! empty( $_POST[ $this->key ] ) && ! empty( $_POST[ $this->is_key ] ) ) {
 				return array( 'value' => $_POST[ $this->key ], 'is' => $_POST[ $this->is_key ] );
+			}
+
+			$active_filters = $ecp_apm->filters->get_active();
+
+			if ( ! empty( $active_filters[ $this->key ] ) && ! empty( $active_filters[ $this->is_key ] ) ) {
+				return array( 'value' => $active_filters[ $this->key ], 'is' => $active_filters[ $this->is_key ] );
 			}
 
 			return $return;

@@ -164,6 +164,7 @@ class WooSlider_Admin {
 		$settings['show_captions'] = '';
 		$settings['sticky_posts'] = '';
 		$settings['size'] = 'large';
+		$settings['post_type'] = 'post';
 		// $settings['as_nav_for'] = '';
 		$settings = (array)apply_filters( 'wooslider_popup_settings', $settings );
 
@@ -489,10 +490,14 @@ class WooSlider_Admin {
 
 		$show_captions_args = array( 'key' => 'show_captions', 'data' => array() );
 
+		$image_size_options = WooSlider_Utils::get_image_size_options();
+	    $image_size_args = array( 'key' => 'size', 'data' => array( 'options' => $image_size_options, 'default' => 'large' ) );
+
 		// Create final array.
 		$fields['limit'] = array( 'name' => __( 'Number of Images', 'wooslider' ), 'type' => 'select', 'args' => $limit_args, 'description' => __( 'The maximum number of images to display', 'wooslider' ) );
 		$fields['thumbnails'] = array( 'name' => __( 'Use thumbnails for Pagination', 'wooslider' ), 'type' => 'select', 'args' => $thumbnails_args, 'description' => __( 'Use thumbnails for pagination, instead of "dot" indicators', 'wooslider' ) );
 		$fields['show_captions'] = array( 'name' => __( 'Show Image Captions', 'wooslider' ), 'type' => 'checkbox', 'args' => $show_captions_args, 'description' => __( 'This will show image captions as slider text on all slides', 'wooslider' ) );
+		$fields['size'] = array( 'name' => __( 'Image Size', 'wooslider' ), 'type' => 'select', 'args' => $image_size_args, 'description' => __( 'Select the image size for this slider.', 'wooslider' ) );
 
 		return $fields;
 	} // End generate_conditional_fields_attachments()
@@ -574,8 +579,7 @@ class WooSlider_Admin {
 			$carousel_columns[$i] = $i;
 		}
 
-	    // Image size options
-	    $image_size_options = array( 'thumbnail' => __( 'Thumbnail', 'wooslider' ), 'medium' => __( 'Medium', 'wooslider' ), 'large' => __( 'Large', 'wooslider' ), 'full' => __( 'Full', 'wooslider' ) );
+	    $image_size_options = WooSlider_Utils::get_image_size_options();
 	    $image_size_args = array( 'key' => 'size', 'data' => array( 'options' => $image_size_options, 'default' => 'large' ) );
 
 		$limit_args = array( 'key' => 'limit', 'data' => array( 'options' => $limit_options, 'default' => 5 ) );
@@ -686,8 +690,28 @@ class WooSlider_Admin {
 		$link_title_args = array( 'key' => 'link_title', 'data' => array() );
 		$display_excerpt_args = array( 'key' => 'display_excerpt', 'data' => array('default' => '1') );
 
+		$image_size_options = WooSlider_Utils::get_image_size_options();
+	    $image_size_args = array( 'key' => 'size', 'data' => array( 'options' => $image_size_options, 'default' => 'large' ) );
+
+		$post_types = get_post_types( array( 'public' => true ), 'objects' );
+
+		$post_types_parsed = array();
+		if ( 0 < count( $post_types ) ) {
+			foreach ( $post_types as $k => $v ) {
+				if ( in_array( $k, array( 'revision', 'slide', 'attachment' ) ) ) {
+					unset( $post_types[$k] );
+				} else {
+					$post_types_parsed[$k] = $v->labels->name;
+				}
+			}
+		}
+
+	    $post_type_args = array( 'key' => 'post_type', 'data' => array( 'options' => $post_types_parsed, 'default' => 'post' ) );
+
 		// Create final array.
+		$fields['post_type'] = array( 'name' => __( 'Content Type', 'wooslider' ), 'type' => 'select', 'args' => $post_type_args, 'description' => __( 'The content type to display', 'wooslider' ) );
 		$fields['limit'] = array( 'name' => __( 'Number of Posts', 'wooslider' ), 'type' => 'select', 'args' => $limit_args, 'description' => __( 'The maximum number of posts to display', 'wooslider' ) );
+		$fields['size'] = array( 'name' => __( 'Image Size', 'wooslider' ), 'type' => 'select', 'args' => $image_size_args, 'description' => __( 'Select the image size for this slider.', 'wooslider' ) );
 		$fields['sticky_posts'] = array( 'name' => __( 'Allow for Sticky Posts', 'wooslider' ), 'type' => 'checkbox', 'args' => $sticky_posts_args, 'description' => __( 'Display sticky posts in the slider', 'wooslider' ) );
 		$fields['thumbnails'] = array( 'name' => __( 'Use thumbnails for Pagination', 'wooslider' ), 'type' => 'select', 'args' => $thumbnails_args, 'description' => __( 'Use thumbnails for pagination, instead of "dot" indicators (uses featured image)', 'wooslider' ) );
 		$fields['link_title'] = array( 'name' => __( 'Link the post title to it\'s post', 'wooslider' ), 'type' => 'checkbox', 'args' => $link_title_args, 'description' => __( 'Link the post title to it\'s single post screen', 'wooslider' ) );

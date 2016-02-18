@@ -68,9 +68,14 @@ function sc_add_page(){
             }
         }
         var parent = jQuery('#page_id').val();
+        var template = jQuery('#page_template').val();
+        var template_text = jQuery('#page_template option[value="'+ template +'"]').text();
+        if(!template) template = '';
+        if(!template_text) template_text = '';
+        
         if(parent==''){
             parent = -1;
-            jQuery('ul.sc-pages').append('<li class="page-item-new' + pageid + '">' + jQuery('#sc-page-name').val() + ' <a href="JavaScript:sc_del_page(' + pageid + ');">Remove</a></li>');
+            jQuery('ul.sc-pages').append('<li class="page-item-new' + pageid + '">' + jQuery('#sc-page-name').val() + (template!='' ? ' (' + template_text + ')' : '') + ' <a href="JavaScript:sc_del_page(' + pageid + ');">Remove</a></li>');
             jQuery('#page_id').append('<option value="new' + pageid + '">' + jQuery('#sc-page-name').val() + '</option>');
         }else{
             var parentname = jQuery('#page_id option[value=' + parent + ']').html();
@@ -81,10 +86,10 @@ function sc_add_page(){
                     parentspace += '&nbsp;';
                 }
             }
-            jQuery('li.page-item-' + parent).append('<li class="page-item-new' + pageid + '">' + jQuery('#sc-page-name').val() + ' <a href="JavaScript:sc_del_page(' + pageid + ');">Remove</a></li>');
+            jQuery('li.page-item-' + parent).append('<li class="page-item-new' + pageid + '">' + jQuery('#sc-page-name').val() + (template!='' ? ' (' + template_text + ')' : '') + ' <a href="JavaScript:sc_del_page(' + pageid + ');">Remove</a></li>');
             jQuery('#page_id option[value=' + parent + ']').after('<option class="p_' + parent + '" value="new' + pageid + '">' + parentspace + jQuery('#sc-page-name').val() + '</option>');
         }
-        jQuery('#sc-pages').val(jQuery('#sc-pages').val() + pageid + '|' + parent + '|' + jQuery('#sc-page-name').val() + '\n');
+        jQuery('#sc-pages').val(jQuery('#sc-pages').val() + pageid + '|' + parent + '|' + jQuery('#sc-page-name').val() + '|' + template + '\n');
                 
         //reset the form
         pageid++;

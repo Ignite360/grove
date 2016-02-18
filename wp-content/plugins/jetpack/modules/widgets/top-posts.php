@@ -26,12 +26,13 @@ function jetpack_top_posts_widget_init() {
 }
 
 class Jetpack_Top_Posts_Widget extends WP_Widget {
-	var $alt_option_name = 'widget_stats_topposts';
-	var $default_title = '';
+	public $alt_option_name = 'widget_stats_topposts';
+	public $default_title = '';
 
 	function __construct() {
 		parent::__construct(
 			'top-posts',
+			/** This filter is documented in modules/widgets/facebook-likebox.php */
 			apply_filters( 'jetpack_widget_name', __( 'Top Posts &amp; Pages', 'jetpack' ) ),
 			array(
 				'description' => __( 'Shows your most viewed posts and pages.', 'jetpack' ),
@@ -162,6 +163,8 @@ class Jetpack_Top_Posts_Widget extends WP_Widget {
 		/**
 		 * Control the number of displayed posts.
 		 *
+		 * @module widgets
+		 *
 		 * @since 3.3.0
 		 *
 		 * @param string $count Number of Posts displayed in the Top Posts widget. Default is 10.
@@ -189,6 +192,8 @@ class Jetpack_Top_Posts_Widget extends WP_Widget {
 			}
 			/**
 			 * Top Posts Widget Image options.
+			 *
+			 * @module widgets
 			 *
 			 * @since 1.8.0
 			 *
@@ -257,6 +262,8 @@ class Jetpack_Top_Posts_Widget extends WP_Widget {
 						/**
 						 * Fires before each Top Post result, inside <li>.
 						 *
+						 * @module widgets
+						 *
 						 * @since 3.2.0
 						 *
 						 * @param string $post['post_id'] Post ID.
@@ -264,11 +271,14 @@ class Jetpack_Top_Posts_Widget extends WP_Widget {
 						do_action( 'jetpack_widget_top_posts_before_post', $post['post_id'] );
 						?>
 						<a href="<?php echo esc_url( $post['permalink'] ); ?>" title="<?php echo esc_attr( wp_kses( $post['title'], array() ) ); ?>" class="bump-view" data-bump-view="tp">
-							<img src="<?php echo esc_url( $post['image'] ); ?>" alt="<?php echo esc_attr( wp_kses( $post['title'], array() ) ); ?>" data-pin-nopin="true" />
+							<?php $size = (int) $get_image_options['avatar_size']; ?>
+							<img width="<?php echo absint( $size ); ?>" height="<?php echo absint( $size ); ?>" src="<?php echo esc_url( $post['image'] ); ?>" alt="<?php echo esc_attr( wp_kses( $post['title'], array() ) ); ?>" data-pin-nopin="true" />
 						</a>
 						<?php
 						/**
 						 * Fires after each Top Post result, inside <li>.
+						 *
+						 * @module widgets
 						 *
 						 * @since 3.2.0
 						 *
@@ -290,7 +300,8 @@ class Jetpack_Top_Posts_Widget extends WP_Widget {
 						do_action( 'jetpack_widget_top_posts_before_post', $post['post_id'] );
 						?>
 						<a href="<?php echo esc_url( $post['permalink'] ); ?>" title="<?php echo esc_attr( wp_kses( $post['title'], array() ) ); ?>" class="bump-view" data-bump-view="tp">
-							<img src="<?php echo esc_url( $post['image'] ); ?>" class='widgets-list-layout-blavatar' alt="<?php echo esc_attr( wp_kses( $post['title'], array() ) ); ?>" data-pin-nopin="true" />
+							<?php $size = (int) $get_image_options['avatar_size']; ?>
+							<img width="<?php echo absint( $size ); ?>" height="<?php echo absint( $size ); ?>" src="<?php echo esc_url( $post['image'] ); ?>" class='widgets-list-layout-blavatar' alt="<?php echo esc_attr( wp_kses( $post['title'], array() ) ); ?>" data-pin-nopin="true" />
 						</a>
 						<div class="widgets-list-layout-links">
 							<a href="<?php echo esc_url( $post['permalink'] ); ?>" class="bump-view" data-bump-view="tp">
@@ -335,6 +346,8 @@ class Jetpack_Top_Posts_Widget extends WP_Widget {
 	function get_by_views( $count ) {
 		/**
 		 * Filter the number of days used to calculate Top Posts for the Top Posts widget.
+		 *
+		 * @module widgets
 		 *
 		 * @since 2.8.0
 		 *
@@ -423,6 +436,8 @@ class Jetpack_Top_Posts_Widget extends WP_Widget {
 
 		/**
 		 * Filter the Top Posts and Pages.
+		 *
+		 * @module widgets
 		 *
 		 * @since 3.0.0
 		 *

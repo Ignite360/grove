@@ -24,6 +24,20 @@
 	}
 	// @endif
 
+	$( window ).load( function() {
+		var tribe_is_paged = tf.get_url_param( 'tribe_paged' ),
+			tribe_display = tf.get_url_param( 'tribe_event_display' ),
+			$container = $( '#tribe-events-photo-events' ),
+			container_width = 0,
+			resize_timer;
+
+		// Redraw after loading fonts, but only if isotope has been initialized
+		if ( $container.hasClass( 'isotope' ) ) {
+			$container.isotope( 'reLayout' );
+		}
+
+	} );
+
 	$( document ).ready( function() {
 
 		var tribe_is_paged = tf.get_url_param( 'tribe_paged' ),
@@ -94,21 +108,22 @@
 							position: 'relative',
 							overflow: 'visible'
 						}
+
 					}, tribe_hide_loader() );
 					// @ifdef DEBUG
 					dbug && debug.info( 'TEC Debug: imagesLoaded setup isotope on photo view.' );
 					// @endif
+
+					$container.resize( function() {
+						tribe_apply_photo_cols( $container );
+						clearTimeout( resize_timer );
+						resize_timer = setTimeout( function() {
+							$container.isotope( 'reLayout' );
+						}, 400 );
+					} );
 				} );
 
 				tribe_apply_photo_cols( $container );
-
-				$container.resize( function() {
-					tribe_apply_photo_cols( $container );
-					clearTimeout( resize_timer );
-					resize_timer = setTimeout( function() {
-						$container.isotope( 'reLayout' );
-					}, 400 );
-				} );
 
 			}
 			else {
@@ -226,7 +241,7 @@
 			} );
 		}
 
-		$( te ).on( "tribe_ev_updatingRecurrence", function() {
+		$( te ).on( 'updating-recurrence.tribe', function() {
 			ts.popping = false;
 		} );
 
@@ -238,7 +253,7 @@
 
 		tf.snap( '#tribe-events-content', '#tribe-events-content', '#tribe-events-footer .tribe-events-nav-previous a, #tribe-events-footer .tribe-events-nav-next a' );
 
-		$( te ).on( "tribe_ev_runAjax", function() {
+		$( te ).on( 'run-ajax.tribe', function() {
 			tribe_events_photo_ajax_post();
 		} );
 
@@ -290,7 +305,11 @@
 					ts.params['tribe_event_category'] = ts.category;
 				}
 
+				/**
+				 * DEPRECATED: tribe_ev_serializeBar has been deprecated in 4.0. Use serialize-bar.tribe instead
+				 */
 				$( te ).trigger( 'tribe_ev_serializeBar' );
+				$( te ).trigger( 'serialize-bar.tribe' );
 
 				if ( tf.invalid_date_in_params( ts.params ) ) {
 					ts.ajax_running = false;
@@ -303,7 +322,11 @@
 				ts.params = $.param( ts.params );
 				ts.url_params = $.param( ts.url_params );
 
+				/**
+				 * DEPRECATED: tribe_ev_collectParams has been deprecated in 4.0. Use collect-params.tribe instead
+				 */
 				$( te ).trigger( 'tribe_ev_collectParams' );
+				$( te ).trigger( 'collect-params.tribe' );
 
 				ts.pushstate = false;
 				ts.do_string = true;
@@ -315,7 +338,12 @@
 				// @ifdef DEBUG
 				dbug && debug.time( 'Photo View Ajax Timer' );
 				// @endif
+
+				/**
+				 * DEPRECATED: tribe_ev_ajaxStart and tribe_ev_photoView_AjaxStart have been deprecated in 4.0. Use ajax-start.tribe and photo-view-ajax-start.tribe instead
+				 */
 				$( te ).trigger( 'tribe_ev_ajaxStart' ).trigger( 'tribe_ev_photoView_AjaxStart' );
+				$( te ).trigger( 'ajax-start.tribe' ).trigger( 'photo-view-ajax-start.tribe' );
 
 				$.post(
 					TribePhoto.ajaxurl,
@@ -345,7 +373,7 @@
 							$( '#tribe-events-content' ).prev( '#tribe-events-list-hash' ).remove();
 							$( '.tribe-events-promo' ).next( '.tribe-events-promo' ).remove();
 
-							//If no events are returned, then hide Header 
+							//If no events are returned, then hide Header
 							if ( response.max_pages == 0 ) {
 								$( '#tribe-events-header' ).hide();
 							}
@@ -369,7 +397,11 @@
 
 							tribe_setup_isotope( $( '#tribe-events-photo-events' ) );
 
+							/**
+							 * DEPRECATED: tribe_ev_ajaxSuccess and tribe_ev_photoView_AjaxSuccess have been deprecated in 4.0. Use ajax-success.tribe and photo-view-ajax-success.tribe instead
+							 */
 							$( te ).trigger( 'tribe_ev_ajaxSuccess' ).trigger( 'tribe_ev_photoView_AjaxSuccess' );
+							$( te ).trigger( 'ajax-success.tribe' ).trigger( 'photo-view-ajax-success.tribe' );
 
 							// @ifdef DEBUG
 							dbug && debug.timeEnd( 'Photo View Ajax Timer' );

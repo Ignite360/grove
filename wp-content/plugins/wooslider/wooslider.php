@@ -3,7 +3,7 @@
 Plugin Name: WooSlider
 Plugin URI: http://woothemes.com/products/wooslider/
 Description: Add responsive slideshows to your website using shortcodes, template tags or widgets. Showcase custom slides, blog posts or other content in a responsive animated slideshow.
-Version: 2.1.0
+Version: 2.3.0
 Author: WooThemes
 Author URI: http://woothemes.com/
 License: GPL version 3 or later - http://www.gnu.org/licenses/old-licenses/gpl-3.0.html
@@ -37,5 +37,5 @@ License: GPL version 3 or later - http://www.gnu.org/licenses/old-licenses/gpl-3
 
 	global $wooslider;
 	$wooslider = new WooSlider( __FILE__ );
-	$wooslider->version = '2.1.0';
+	$wooslider->version = '2.3.0';
 ?>

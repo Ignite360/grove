@@ -73,6 +73,14 @@ class WooSlider_Sliders {
 			}
 		}
 
+		/**
+		* Action filter wooslider_get_slides.
+		*
+		* @param $slides
+		* @param $type
+		* @param $args
+		* @param $settings
+		*/
 		return (array) apply_filters( 'wooslider_get_slides', $slides, $type, $args, $settings );
 	} // End get_slides()
 
@@ -82,36 +90,83 @@ class WooSlider_Sliders {
 	 * @param  array $slides 	The slides to render.
 	 * @return string         	The rendered HTML.
 	 */
-	public function render ( $slides ) {
-		$html = '';
+    public function render ( $slides ) {
+        $html = '';
 
-		if ( ! is_array( $slides ) ) $slides = (array)$slides;
+        if ( ! is_array( $slides ) ) $slides = (array)$slides;
 
-		if ( is_array( $slides ) && count( $slides ) ) {
-			$slide_count = 1;
-			foreach ( $slides as $k => $v ) {
+        if ( is_array( $slides ) && count( $slides ) ) {
+            $slide_count = 1;
+            foreach ( $slides as $k => $v ) {
+                if ( isset( $v['content'] ) ) {
+                    $atts = '';
+                    if ( isset( $v['attributes'] ) && is_array( $v['attributes'] ) && ( count( $v['attributes'] ) > 0 ) ) {
+                        foreach ( $v['attributes'] as $i => $j ) {
+                            $atts .= ' ' . esc_attr( strtolower( $i ) ) . '="' . esc_attr( $j ) . '"';
+                        }
+                    }
 
-				if ( isset( $v['content'] ) ) {
-					$atts = '';
-					if ( isset( $v['attributes'] ) && is_array( $v['attributes'] ) && ( count( $v['attributes'] ) > 0 ) ) {
-						foreach ( $v['attributes'] as $i => $j ) {
-							$atts .= ' ' . esc_attr( strtolower( $i ) ) . '="' . esc_attr( $j ) . '"';
-						}
-					}
-					if($slide_count > 2 ) {
-						$atts .=' data-wooslidercontent="' . esc_attr($v['content']) . '"';
-						$html .= '<li class="slide"' . $atts . '></li>' . "\n";
+                    // get the slide ID
+                    if( isset( $v['ID'] ) ){
+                        $slide_id = $v['ID'];
+                    }else{
+                        $slide_id = '';
+                    }
 
-					} else {
-						$html .= '<li class="slide"' . $atts . '>' . "\n" . $v['content'] . '</li>' . "\n";
-					}
-				}
-				$slide_count++;
-			}
-		}
+                    /**
+                     * 	Wooslider before each Slide hook.
+                     */
+                    ob_start();
+                    do_action( 'wooslider_before_each_slide' );
+                    $html .= ob_get_clean() . "\n";
 
-		return $html;
-	} // End render()
+                    if( isset( $slide_id ) ) {
+                        /**
+                         *    Wooslider before $slide_id
+                         *    hook: wooslider_after_slide_$Post_ID
+                         */
+                        ob_start();
+                        do_action('wooslider_before_slide_' . $slide_id);
+                        $html .= ob_get_clean() . "\n";
+                    }
+
+                    if($slide_count > 2 ) {
+                        $atts .=' data-wooslidercontent="' . esc_attr($v['content']) . '"';
+                        $slide_li_content = '<li class="slide"' . $atts . '></li>' . "\n";
+
+                    } else {
+                        $slide_li_content = '<li class="slide"' . $atts . '>' . "\n" . $v['content'] . '</li>' . "\n";
+                    }
+
+                    if( isset( $slide_id ) ) {
+                        /**
+                         *    Action filter slide_$slide
+                         *    filter: wooslider_slide_$Post_ID
+                         */
+                        $html .= apply_filters('wooslider_slide_' . $slide_id, $slide_li_content);
+
+                        /**
+                         *    Wooslider after $slide_id
+                         *    hook: wooslider_after_slide_$Post_ID
+                         */
+                        ob_start();
+                        do_action('wooslider_after_slide_' . $slide_id);
+                        $html .= ob_get_clean() . "\n";
+                    }
+
+                    /**
+                     * 	Wooslider after each Slide hook.
+                     */
+                    ob_start();
+                    do_action( 'wooslider_after_each_slide' );
+                    $html .= ob_get_clean() . "\n";
+
+                }
+                $slide_count++;
+            }
+        }
+        return $html;
+    } // End render()
 
 	/**
 	 * Render the carousel into appropriate HTML.
@@ -193,6 +248,9 @@ class WooSlider_Sliders {
 						$data['attributes'] = array( 'data-thumb' => esc_url( WooSlider_Utils::get_placeholder_image() ) );
 					}
 				}
+				// add the image post id
+				$data['ID'] =  $v->ID;
+
 				$slides[] = $data;
 			}
 		}
@@ -220,7 +278,8 @@ class WooSlider_Sliders {
 						'overlay' => 'none', // none, full or natural
 						'display_excerpt' => 'true',
 						'display_title' => 'true',
-						'sticky_posts' => 'false'
+						'sticky_posts' => 'false',
+						'post_type' => 'post'
 						);
 
 		$args = wp_parse_args( $args, $defaults );
@@ -232,7 +291,7 @@ class WooSlider_Sliders {
 		// Determine and validate the overlay setting.
 		if ( ! in_array( $args['overlay'], array( 'none', 'full', 'natural' ) ) ) { $args['overlay'] = $defaults['overlay']; }
 
-		$query_args = array( 'post_type' => 'post', 'numberposts' => intval( $args['limit'] ) );
+		$query_args = array( 'post_type' => esc_attr( $args['post_type'] ), 'numberposts' => intval( $args['limit'] ) );
 
 		if ( $args['category'] != '' ) {
 			$query_args['category_name'] = esc_attr( $args['category'] );
@@ -314,6 +373,9 @@ class WooSlider_Sliders {
 						$data['attributes'] = array( 'data-thumb' => esc_url( WooSlider_Utils::get_placeholder_image() ) );
 					}
 				}
+
+				// add the post id to the list the slide
+				$data['ID'] =  $post->ID;
 
 				$slides[] = $data;
 			}
@@ -483,6 +545,9 @@ class WooSlider_Sliders {
 			        }
 			    }
 				$data['video'] = $has_video;
+
+				// add the post id to the list the slide
+				$data['ID'] =  $post->ID;
 
 				$slides[] = $data;
 			}

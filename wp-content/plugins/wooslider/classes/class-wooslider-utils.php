@@ -64,6 +64,25 @@ class WooSlider_Utils {
 	} // End get_thumbnail_options()
 
 	/**
+	 * Get an array of the supported image size options.
+	 * @since  2.2.2
+	 * @return array The navigation types supported by WooSlider.
+	 */
+	public static function get_image_size_options () {
+		// Image size options
+	   	$image_size_options = array();
+	    $registered_image_sizes = (array)get_intermediate_image_sizes();
+	    if ( ! empty( $registered_image_sizes ) ) {
+	    	foreach ( $registered_image_sizes as $k => $v ) {
+	    		$size_label = $v;
+	    		$image_size_options[$v] = apply_filters( 'wooslider_image_size_label_' . $v, ucwords( str_replace( '_', ' ', str_replace( '-', ' ', $size_label ) ) ) );
+	    	}
+	    }
+	    $image_size_options['full'] = __( 'Full Size', 'wooslider' );
+		return (array)apply_filters( 'wooslider_thumbnail_options', $image_size_options );
+	} // End get_image_size_options()
+
+	/**
 	 * Get an array of the supported order options.
 	 * @since  2.0.1
 	 * @return array The navigation types supported by WooSlider.

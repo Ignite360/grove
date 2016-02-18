@@ -8,13 +8,14 @@
 		protected $meta = '_EventRecurrence';
 
 		protected $opts;
-		protected $not_recur = 's:4:"type";s:4:"None";';
+		protected $not_recur = 's:5:"rules";a:0:{}s:10:"exclusions";a:0:{}';
+		protected $not_recur_legacy = 's:4:"type";s:4:"None";';
 
 		public function __construct() {
 
 			$this->opts = array(
-				'is' => __( 'Yes', 'tribe-events-calendar-pro' ),
-				'not' => __( 'No', 'tribe-events-calendar-pro' ),
+				'is'  => esc_html__( 'Yes', 'tribe-events-calendar-pro' ),
+				'not' => esc_html__( 'No', 'tribe-events-calendar-pro' ),
 			);
 
 			$type = $this->type;
@@ -51,17 +52,25 @@
 
 
 			if ( 'is' === $wp_query->apm_ecp_recur ) {
-				$where .= " AND ( recur_meta.meta_value NOT LIKE '%$this->not_recur%' AND recur_meta.meta_value <> '' )  ";
+				$where .= " AND ( recur_meta.meta_value NOT LIKE '%$this->not_recur%' AND recur_meta.meta_value NOT LIKE '%$this->not_recur_legacy%' AND recur_meta.meta_value <> '' )  ";
 			} else {
-				$where .= " AND ( recur_meta.meta_value LIKE '%$this->not_recur%' OR recur_meta.meta_value = '' ) ";
+				$where .= " AND ( recur_meta.meta_value LIKE '%$this->not_recur%' OR recur_meta.meta_value LIKE '%$this->not_recur_legacy%' OR recur_meta.meta_value = '' )  ";
 			}
 
 			return $where;
 		}
 
 		public function maybe_set_active( $return, $key, $filter ) {
-			if ( isset( $_POST[ $key ] ) && ! empty( $_POST[ $key ] ) ) {
-				return $_POST[ $key ];
+			global $ecp_apm;
+
+			if ( ! empty( $_POST[ $this->key ] ) ) {
+				return $_POST[ $this->key ];
+			}
+
+			$active_filters = $ecp_apm->filters->get_active();
+
+			if ( ! empty( $active_filters[ $this->key ] ) ) {
+				return $active_filters[ $this->key ];
 			}
 
 			return $return;

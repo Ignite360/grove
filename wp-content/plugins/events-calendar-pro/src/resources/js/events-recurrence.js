@@ -42,6 +42,12 @@ tribe_events_pro_admin.recurrence = {
 		window.Handlebars.registerHelper( {
 			tribe_recurrence_select: function( value, options ) {
 				var $el = $( '<select />' ).html( options.fn( this ) );
+
+				// if a value is passed in, get rid of the defaults
+				if ( value ) {
+					$el.find( 'option:selected' ).attr( 'selected', false );
+				}
+
 				$el.find( '[value="' + value + '"]' ).attr( 'selected', 'selected' );
 				return $el.html();
 			},
@@ -82,6 +88,9 @@ tribe_events_pro_admin.recurrence = {
 		$( '.recurrence_end, #EventStartDate, #EventEndDate' ).datepicker( 'option', 'onClose', this.event.datepicker_updated );
 
 		this.set_recurrence_end_min_date();
+
+		// Trigger the required events after everything is done
+		$( '.eventForm' ).find( '[data-field="type"]' ).trigger( 'change' );
 	};
 
 	/**
@@ -199,7 +208,7 @@ tribe_events_pro_admin.recurrence = {
 	};
 
 	/**
-	 * checks the current state of fields and sets appropraite data attributes for them
+	 * checks the current state of fields and sets appropriate data attributes for them
 	 * on the recurrence rule
 	 */
 	my.set_recurrence_data_attributes = function( $rules ) {
@@ -452,22 +461,48 @@ tribe_events_pro_admin.recurrence = {
 		var num_hours = Math.ceil( ( end_moment.diff( start_moment, 'hours', true ) - ( num_days * 24 ) ) * 100 ) / 100;
 
 		var new_start_time = $rule.find( '[data-field="custom-start-time-hour"] option:selected' ).val() + ':'+
-			$rule.find( '[data-field="custom-start-time-minute"] option:selected' ).val() + ' ' +
-			$rule.find( '[data-field="custom-start-time-meridian"] option:selected' ).val();
+			$rule.find( '[data-field="custom-start-time-minute"] option:selected' ).val();
+
+		var $custom_start_meridian = $rule.find( '[data-field="custom-start-time-meridian"] option:selected' );
+		if ( $custom_start_meridian.length ) {
+			new_start_time += ' ' + $custom_start_meridian.val();
+		}
+
 		var new_start = start_moment.format( 'YYYY-MM-DD' ) + ' ' + new_start_time;
 
-		var new_end_time = $rule.find( '[data-field="custom-end-time-hour"] option:selected' ).val() + ':' +
-			$rule.find( '[data-field="custom-end-time-minute"] option:selected' ).val() + ' ' +
-			$rule.find( '[data-field="custom-end-time-meridian"] option:selected' ).val();
-		var new_end = end_moment.format( 'YYYY-MM-DD' ) + ' ' + new_end_time;
+		var duration_days = parseInt( $rule.find( '[data-field="custom-duration-days"]' ).val(), 10 );
+		var duration_hours = parseInt( $rule.find( '[data-field="custom-duration-hours"]' ).val(), 10 );
+		var duration_minutes = parseInt( $rule.find( '[data-field="custom-duration-minutes"]' ).val(), 10 );
 
 		var new_start_moment = moment( new_start, date_format );
-		var new_end_moment = moment( new_end, date_format );
+
+		var new_end_moment = new_start_moment.add( {
+			days: duration_days,
+			hours: duration_hours,
+			minutes: duration_minutes
+		} );
 
 		var new_num_days = new_end_moment.diff( new_start_moment, 'days' );
 
 		// make sure we always round hours UP to when dealing with decimal lengths more than 2. Example: 4.333333 would become 4.34
 		var new_num_hours = Math.ceil( ( new_end_moment.diff( new_start_moment, 'hours', true ) - ( num_days * 24 ) ) * 100 ) / 100;
+
+		// If a custom duration has been specified we can obtain the days and hours directly from the relevant fields
+		if ( ! same_time ) {
+			var duration_days  = parseInt( $rule.find( '[data-field="custom-duration-days"]' ).val(), 10 );
+			var duration_hours = parseFloat( $rule.find( '[data-field="custom-duration-hours"]' ).val() );
+			var duration_mins  = parseInt( $rule.find( '[data-field="custom-duration-minutes"]' ).val(), 10 );
+
+			duration_days  = isNaN( duration_days )  ? 0 : duration_days;
+			duration_hours = isNaN( duration_hours ) ? 0 : duration_hours;
+			duration_mins  = isNaN( duration_mins )  ? 0 : duration_mins;
+
+			new_num_days  = duration_days;
+			new_num_hours = duration_hours + ( duration_mins / 60 );
+
+			// Round the number of hours
+			new_num_hours = Math.ceil( new_num_hours * 100 ) / 100;
+		}
 
 		var weekdays = [];
 		var months = [];
@@ -526,6 +561,7 @@ tribe_events_pro_admin.recurrence = {
 				key += '-unfiltered';
 			}
 		} else {
+			key = 'simple-' + key;
 			key += '-' + end_type;
 		}
 
@@ -584,6 +620,12 @@ tribe_events_pro_admin.recurrence = {
 		}
 
 		switch ( key ) {
+			case 'simple-every-day-on':
+			case 'simple-every-week-on':
+			case 'simple-every-month-on':
+			case 'simple-every-year-on':
+				text = text.replace( '%1$s', end );
+				break;
 			case 'every-day-on':
 			case 'every-week-on':
 			case 'every-month-on':
@@ -860,7 +902,12 @@ tribe_events_pro_admin.recurrence = {
 
 	my.event.datepicker_end_date_changed = function() {
 		$( this ).removeClass( 'placeholder' );
+
+		/**
+		 * DEPRECATED: recurrenceEndChanged has been deprecated in 4.0. Use recurrence-end-changed.tribe instead
+		 */
 		$( this ).trigger( 'recurrenceEndChanged' );
+		$( this ).trigger( 'recurrence-end-changed.tribe' );
 	};
 
 	my.event.recurrence_row_changed = function() {

@@ -54,10 +54,43 @@ function wooslider ( $args = array(), $extra_args = array(), $echo = true ) {
 
 	$html = '';
 	if ( '' != $slides_html ) {
+
+		/**
+		* 	Before slider hook.
+		*/
+		ob_start();
+		do_action( 'wooslider_before_slider' );
+		$html .= ob_get_clean() . "\n";
+
 		$html .= '<div id="' . esc_attr( $settings['id'] ) . '" class="' . esc_attr( $class ) . '"><ul class="slides">' . "\n";
+
+		/**
+		* 	Before slides hook. Jus before the slide list items.
+		*/
+		ob_start();
+		do_action( 'wooslider_inside_before_slides' );
+		$html .= ob_get_clean() . "\n";
+
+		// Add the slides
 		$html .= $slides_html;
+
+		/**
+		* 	After slides hook, just after all slied list items.
+		*/
+		ob_start();
+		do_action( 'wooslider_inside_after_slides' );
+		$html .= ob_get_clean() . "\n";
+
 		$html .= '</ul></div>' . "\n";
+
+		/**
+		* 	After slider hook.
+		*/
+		ob_start();
+		do_action( 'wooslider_after_slider' );
+		$html .= ob_get_clean() ."\n";
 	}
+
 	if ( isset( $extra_args['thumbnails'] ) && ( $extra_args['thumbnails'] == 2 || $extra_args['thumbnails'] == 'carousel' ) ) {
 		$carousel_html = $wooslider->frontend->sliders->render_carousel( $slides );
 		if ( '' != $carousel_html ) {
