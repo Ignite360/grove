@@ -532,17 +532,12 @@ function sharing_add_footer() {
 		endif;
 
 		wp_enqueue_script( 'sharing-js' );
-<<<<<<< HEAD
 		$sharing_js_options = array(
 			'lang'   => get_base_recaptcha_lang_code(),
 			/** This filter is documented in modules/sharedaddy/sharing-service.php */
 			'counts' => apply_filters( 'jetpack_sharing_counts', true )
 		);
 		wp_localize_script( 'sharing-js', 'sharing_js_options', $sharing_js_options);
-=======
-		$recaptcha__options = array( 'lang' => get_base_recaptcha_lang_code() );
-		wp_localize_script('sharing-js', 'recaptcha_options', $recaptcha__options);
->>>>>>> origin/johndcoy
 	}
 
 	$sharer = new Sharing_Service();
@@ -790,11 +785,7 @@ function get_base_recaptcha_lang_code() {
 		'tr'    => 'tr'
 	);
 
-<<<<<<< HEAD
 	$blog_lang_code = function_exists( 'get_blog_lang_code' ) ? get_blog_lang_code() : get_bloginfo( 'language' );
-=======
-	$blog_lang_code = function_exists( 'get_blog_lang_code' ) ? get_blog_lang_code() : get_bloginfo( 'language' ); 
->>>>>>> origin/johndcoy
 	if( isset( $base_recaptcha_lang_code_mapping[ $blog_lang_code ] ) )
 		return $base_recaptcha_lang_code_mapping[ $blog_lang_code ];
 

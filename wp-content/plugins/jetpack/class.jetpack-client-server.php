@@ -3,7 +3,6 @@
 /**
  * Client = Plugin
  * Client Server = API Methods the Plugin must respond to
-<<<<<<< HEAD
  */
 class Jetpack_Client_Server {
 
@@ -38,22 +37,6 @@ class Jetpack_Client_Server {
 			$jetpack = $this->get_jetpack();
 			$role = $jetpack->translate_current_user_to_role();
 
-=======
- *
- * @todo Roll this into Jetpack?  There's only one 'public' method now: ::authorize().
- */
-class Jetpack_Client_Server {
-	function authorize() {
-		$data = stripslashes_deep( $_GET );
-
-		$args = array();
-
-		$redirect = isset( $data['redirect'] ) ? esc_url_raw( (string) $data['redirect'] ) : '';
-
-		do {
-			$jetpack = Jetpack::init();
-			$role = $jetpack->translate_current_user_to_role();
->>>>>>> origin/johndcoy
 			if ( !$role ) {
 				Jetpack::state( 'error', 'no_role' );
 				break;
@@ -65,11 +48,7 @@ class Jetpack_Client_Server {
 				break;
 			}
 
-<<<<<<< HEAD
 			$this->check_admin_referer( "jetpack-authorize_{$role}_{$redirect}" );
-=======
-			check_admin_referer( "jetpack-authorize_{$role}_{$redirect}" );
->>>>>>> origin/johndcoy
 
 			if ( !empty( $data['error'] ) ) {
 				Jetpack::state( 'error', $data['error'] );
@@ -128,26 +107,17 @@ class Jetpack_Client_Server {
 				break;
 			}
 
-<<<<<<< HEAD
 			if ( $active_modules = Jetpack_Options::get_option( 'active_modules' ) ) {
 				Jetpack_Options::delete_option( 'active_modules' );
-=======
-			if ( $active_modules = Jetpack::get_option( 'active_modules' ) ) {
-				Jetpack::delete_option( 'active_modules' );
->>>>>>> origin/johndcoy
 
 				Jetpack::activate_default_modules( 999, 1, $active_modules );
 			} else {
 				Jetpack::activate_default_modules();
 			}
 
-<<<<<<< HEAD
 			// Sync all registers options and constants
 			/** This action is documented in class.jetpack.php */
 			do_action( 'jetpack_sync_all_registered_options' );
-=======
-			$jetpack->sync->register( 'noop' ); // Spawn a sync to make sure the Jetpack Servers know what modules are active.
->>>>>>> origin/johndcoy
 
 			// Start nonce cleaner
 			wp_clear_scheduled_hook( 'jetpack_clean_nonces' );
@@ -155,7 +125,6 @@ class Jetpack_Client_Server {
 		} while ( false );
 
 		if ( wp_validate_redirect( $redirect ) ) {
-<<<<<<< HEAD
 			$this->wp_safe_redirect( $redirect );
 		} else {
 			$this->wp_safe_redirect( Jetpack::admin_url() );
@@ -166,27 +135,12 @@ class Jetpack_Client_Server {
 
 	public static function deactivate_plugin( $probable_file, $probable_title ) {
 		include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-=======
-			wp_safe_redirect( $redirect );
-		} else {
-			wp_safe_redirect( Jetpack::admin_url() );
-		}
-
-		exit;
-	}
-
-	public static function deactivate_plugin( $probable_file, $probable_title ) {
->>>>>>> origin/johndcoy
 		if ( is_plugin_active( $probable_file ) ) {
 			deactivate_plugins( $probable_file );
 			return 1;
 		} else {
 			// If the plugin is not in the usual place, try looking through all active plugins.
-<<<<<<< HEAD
 			$active_plugins = Jetpack::get_active_plugins();
-=======
-			$active_plugins = get_option( 'active_plugins', array() );
->>>>>>> origin/johndcoy
 			foreach ( $active_plugins as $plugin ) {
 				$data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
 				if ( $data['Name'] == $probable_title ) {
@@ -203,11 +157,7 @@ class Jetpack_Client_Server {
 	 * @return object|WP_Error
 	 */
 	function get_token( $data ) {
-<<<<<<< HEAD
 		$jetpack = $this->get_jetpack();
-=======
-		$jetpack = Jetpack::init();
->>>>>>> origin/johndcoy
 		$role = $jetpack->translate_current_user_to_role();
 
 		if ( !$role ) {
@@ -222,11 +172,7 @@ class Jetpack_Client_Server {
 		$redirect = isset( $data['redirect'] ) ? esc_url_raw( (string) $data['redirect'] ) : '';
 
 		$body = array(
-<<<<<<< HEAD
 			'client_id' => Jetpack_Options::get_option( 'id' ),
-=======
-			'client_id' => Jetpack::get_option( 'id' ),
->>>>>>> origin/johndcoy
 			'client_secret' => $client_secret->secret,
 			'grant_type' => 'authorization_code',
 			'code' => $data['code'],
@@ -244,11 +190,7 @@ class Jetpack_Client_Server {
 				'Accept' => 'application/json',
 			),
 		);
-<<<<<<< HEAD
 		$response = Jetpack_Client::_wp_remote_request( Jetpack::fix_url_for_bad_hosts( Jetpack::api_url( 'token' ) ), $args );
-=======
-		$response = Jetpack_Client::_wp_remote_request( Jetpack::fix_url_for_bad_hosts( Jetpack::api_url( 'token' ), $args ), $args );
->>>>>>> origin/johndcoy
 
 		if ( is_wp_error( $response ) ) {
 			return new Jetpack_Error( 'token_http_request_failed', $response->get_error_message() );
@@ -292,7 +234,6 @@ class Jetpack_Client_Server {
 
 		if ( !$cap = $jetpack->translate_role_to_cap( $role ) )
 			return new Jetpack_Error( 'scope', 'No Cap', $code );
-<<<<<<< HEAD
 		if ( ! current_user_can( $cap ) )
 			return new Jetpack_Error( 'scope', 'current_user_cannot', $code );
 
@@ -322,11 +263,4 @@ class Jetpack_Client_Server {
 		exit;
 	}
 
-=======
-		if ( !current_user_can( $cap ) )
-			return new Jetpack_Error( 'scope', 'current_user_cannot', $code );
-
-		return (string) $json->access_token;
-	}
->>>>>>> origin/johndcoy
 }

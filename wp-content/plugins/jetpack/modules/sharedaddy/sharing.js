@@ -351,19 +351,10 @@ if ( sharing_js_options && sharing_js_options.counts ) {
 					$( '#sharing_email form input[type=submit]' ).removeAttr( 'disabled' );
 					$( '#sharing_email form a.sharing_cancel' ).show();
 
-<<<<<<< HEAD
 					// Reset reCATPCHA if exists.
 					if ( 'object' === typeof grecaptcha && 'function' === typeof grecaptcha.reset ) {
 						grecaptcha.reset();
 					}
-=======
-					key = '';
-					if ( $( '#recaptcha_public_key' ).length > 0 )
-						key = $( '#recaptcha_public_key' ).val();
-
-					// Update the recaptcha
-					Recaptcha.create( key, 'sharing_recaptcha', { lang : recaptcha_options.lang } );
->>>>>>> origin/johndcoy
 
 					// Show dialog
 					$sharing_email.css( {

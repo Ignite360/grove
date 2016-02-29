@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * Sharedaddy Base Styles
  *
@@ -9,15 +8,6 @@
 /* Master container */
 #jp-post-flair {
 	padding-top: .5em;
-=======
-li.share-print a.sd-button > spandiv.sharedaddy ul,
-div.sharedaddy li {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-	border: none;
-	background: none;
->>>>>>> origin/johndcoy
 }
 
 
@@ -495,17 +485,8 @@ body .sd-social-icon .sd-content li.share-custom a span {
 	opacity: .6;
 }
 
-<<<<<<< HEAD
 .sd-social-icon .sd-content ul li[class*='share-'] a.sd-button:before {
 	top: 0;
-=======
-li.share-kindle a.sd-button > span {
-	background-image: url('images/kindle.png');
-}
-
-li.share-email a.sd-button > span {
-	background-image: url('images/email.png');
->>>>>>> origin/johndcoy
 }
 
 .sd-social-icon .sd-content ul li[class*='share-'] a.sd-button.share-custom {
@@ -572,22 +553,10 @@ li.share-email a.sd-button > span {
 	color: #fff !important;
 }
 
-<<<<<<< HEAD
 .sd-social-icon .sd-content ul li[class*='share-'].share-google-plus-1 a.sd-button {
 	background: #dd4b39;
 	color: #fff !important;
 }
-=======
-	li.share-kindle a.sd-button > span {
-		background-image: url('images/kindle@2x.png');
-		background-size: 16px 16px;
-	}
-
-	li.share-email a.sd-button > span {
-		background-image: url('images/email@2x.png?1');
-		background-size: 16px 16px;
-	}
->>>>>>> origin/johndcoy
 
 .sd-social-icon .sd-content ul li[class*='share-'].share-pocket a.sd-button {
 	background: #ee4056;

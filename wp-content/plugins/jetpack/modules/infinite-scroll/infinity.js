@@ -623,11 +623,7 @@ Scroller.prototype.updateURL = function( page ) {
  */
 $( document ).ready( function() {
 	// Check for our variables
-<<<<<<< HEAD
 	if ( 'object' != typeof infiniteScroll )
-=======
-	if ( 'object' != typeof infiniteScroll ) 
->>>>>>> origin/johndcoy
 		return;
 
 	// Set ajaxurl (for brevity)

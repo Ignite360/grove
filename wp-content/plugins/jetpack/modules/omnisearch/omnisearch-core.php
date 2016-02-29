@@ -146,7 +146,6 @@ class Jetpack_Omnisearch {
 	}
 
 	function admin_bar_search( $wp_admin_bar ) {
-<<<<<<< HEAD
 		if(
 			! is_admin() ||
 			! current_user_can( 'edit_posts' ) ||
@@ -155,9 +154,6 @@ class Jetpack_Omnisearch {
 				! wpcom_use_wpadmin_flows()
 			)
 		)
-=======
-		if( ! is_admin() || ! current_user_can( 'edit_posts' ) )
->>>>>>> origin/johndcoy
 			return;
 
 		$form = self::get_omnisearch_form( array(

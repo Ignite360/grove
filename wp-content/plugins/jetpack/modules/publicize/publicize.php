@@ -427,7 +427,6 @@ abstract class Publicize_Base {
 
 		return post_type_supports( $post_type, 'publicize' );
 	}
-<<<<<<< HEAD
 
 	/**
 	 * Runs tests on all the connections and returns the results to the caller
@@ -475,6 +474,4 @@ abstract class Publicize_Base {
 
 		wp_send_json_success( $test_results );
 	}
-=======
->>>>>>> origin/johndcoy
 }

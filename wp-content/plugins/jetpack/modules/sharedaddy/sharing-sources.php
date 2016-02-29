@@ -1602,7 +1602,6 @@ class Share_Pocket extends Sharing_Source {
 
 }
 
-<<<<<<< HEAD
 class Share_Skype extends Sharing_Source {
 	public $shortname = 'skype';
 	public $genericon = '\f220';
@@ -1686,5 +1685,3 @@ class Share_Skype extends Sharing_Source {
 		endif;
 	}
 }
-=======
->>>>>>> origin/johndcoy

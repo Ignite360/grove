@@ -23,12 +23,7 @@ class WPCOM_JSON_API {
 	public $exit = true;
 	public $public_api_scheme = 'https';
 
-<<<<<<< HEAD
 	public $output_status_code = 200;
-=======
-	var $trapped_error = null;
-	var $did_output = false;
->>>>>>> origin/johndcoy
 
 	public $trapped_error = null;
 	public $did_output = false;
@@ -158,7 +153,6 @@ class WPCOM_JSON_API {
 		add_filter( 'comment_edit_pre', array( $this, 'comment_edit_pre' ) );
 
 		$initialization = $this->initialize();
-<<<<<<< HEAD
 		if ( 'OPTIONS' == $this->method ) {
 			/**
 			 * Fires before the page output.
@@ -172,8 +166,6 @@ class WPCOM_JSON_API {
 			return $this->output( 200, '', 'plain/text' );
 		}
 
-=======
->>>>>>> origin/johndcoy
 		if ( is_wp_error( $initialization ) ) {
 			$this->output_error( $initialization );
 			return;
@@ -181,7 +173,6 @@ class WPCOM_JSON_API {
 
 		// Normalize path and extract API version
 		$this->path = untrailingslashit( $this->path );
-<<<<<<< HEAD
 		preg_match( '#^/rest/v(\d+(\.\d+)*)#', $this->path, $matches );
 
 		// HACK Alert!
@@ -197,11 +188,6 @@ class WPCOM_JSON_API {
 			$this->path = substr( $this->path, strlen( $matches[0] ) );
 			$this->version = $matches[1];
 		}
-=======
-		preg_match( '#^/rest/v1(\.\d+)*#', $this->path, $matches );
-		$this->path = substr( $this->path, strlen( $matches[0] ) );
-		$this->version = $matches[1];
->>>>>>> origin/johndcoy
 
 		$allowed_methods = array( 'GET', 'POST' );
 		$four_oh_five = false;
@@ -364,7 +350,6 @@ class WPCOM_JSON_API {
 		else
 			$this->output( $status_code, $response, $content_type );
 		$this->exit = $exit;
-<<<<<<< HEAD
 		if ( ! defined( 'XMLRPC_REQUEST' ) || ! XMLRPC_REQUEST ) {
 			$this->finish_request();
 		}
@@ -372,9 +357,6 @@ class WPCOM_JSON_API {
 
 	function set_output_status_code( $code = 200 ) {
 		$this->output_status_code = $code;
-=======
-		$this->finish_request();
->>>>>>> origin/johndcoy
 	}
 
 	function output( $status_code, $response = null, $content_type = 'application/json' ) {
@@ -386,13 +368,10 @@ class WPCOM_JSON_API {
 		}
 		$this->did_output = true;
 
-<<<<<<< HEAD
 		// 400s and 404s are allowed for all origins
 		if ( 404 == $status_code || 400 == $status_code )
 			header( 'Access-Control-Allow-Origin: *' );
 
-=======
->>>>>>> origin/johndcoy
 		if ( is_null( $response ) ) {
 			$response = new stdClass;
 		}
@@ -452,12 +431,8 @@ class WPCOM_JSON_API {
 		return $content_type;
 	}
 
-<<<<<<< HEAD
 	public static function serializable_error ( $error ) {
 
-=======
-	function output_error( $error ) {
->>>>>>> origin/johndcoy
 		$status_code = $error->get_error_data();
 
 		if ( is_array( $status_code ) )
@@ -470,7 +445,6 @@ class WPCOM_JSON_API {
 			'error'   => $error->get_error_code(),
 			'message' => $error->get_error_message(),
 		);
-<<<<<<< HEAD
 		return array(
 			'status_code' => $status_code,
 			'errors' => $response
@@ -544,9 +518,6 @@ class WPCOM_JSON_API {
 		}
 
 		return $response;
-=======
-		return $this->output( $status_code, $response );
->>>>>>> origin/johndcoy
 	}
 
 	function ensure_http_scheme_of_home_url( $url, $path, $original_scheme ) {

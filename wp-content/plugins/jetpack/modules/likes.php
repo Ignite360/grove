@@ -3,16 +3,11 @@
  * Module Name: Likes
  * Module Description: Give visitors an easy way to show their appreciation for your content.
  * First Introduced: 2.2
-<<<<<<< HEAD
  * Sort Order: 23
  * Requires Connection: Yes
  * Auto Activate: No
  * Module Tags: Social
  * Additional Search Queries: like, likes, wordpress.com
-=======
- * Sort Order: 4
- * Requires Connection: Yes
->>>>>>> origin/johndcoy
  */
 
 Jetpack::dns_prefetch( array(

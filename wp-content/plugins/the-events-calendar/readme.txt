@@ -1,20 +1,11 @@
 === The Events Calendar ===
 
-<<<<<<< HEAD
 Contributors: ModernTribe, borkweb, zbtirrell, barry.hughes, bordoni, brianjessee, brook-tribe, faction23, geoffgraham, ggwicz, jazbek, jbrinley, joshlimecuda, leahkoerper, lucatume, mastromktg, mat-lipe, mdbitz, neillmcshea, nicosantos, peterchester, reid.peifer, roblagatta, ryancurban, shane.pearlman, thatdudebutch
 Tags: events, calendar, event, venue, organizer, dates, date, google maps, conference, workshop, concert, meeting, seminar, summit, class, modern tribe, tribe, widget
 Donate link: http://m.tri.be/29
 Requires at least: 3.9
 Tested up to: 4.4.1
 Stable tag: 4.0.6
-=======
-Contributors:  ModernTribe, PaulHughes01, roblagatta, jonahcoyote, MZAWeb, codearachnid, ryancurban, faction23, jazbek, kyleunzicker, leahkoerper, barryhughes, peterchester, reid.peifer, shane.pearlman
-Tags: events, calendar, event, venue, organizer, dates, date, google maps, conference, workshop, concert, meeting, seminar, summit, class, modern tribe, tribe, widget
-Donate link: http://m.tri.be/29
-Requires at least: 3.5
-Tested up to: 3.6
-Stable tag: 3.0.2
->>>>>>> origin/johndcoy
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -201,7 +192,6 @@ The plugin is produced by <a href="http://m.tri.be/2s">Modern Tribe Inc</a>.
 
 = Current Contributors =
 
-<<<<<<< HEAD
 <a href="https://profiles.wordpress.org/barryhughes">Barry Hughes</a>
 <a href="https://profiles.wordpress.org/brianjessee">Brian Jessee</a>
 <a href="https://profiles.wordpress.org/brook-tribe">Brook Harding</a>
@@ -224,23 +214,6 @@ The plugin is produced by <a href="http://m.tri.be/2s">Modern Tribe Inc</a>.
 <a href="https://profiles.wordpress.org/shane.pearlman">Shane Pearlman</a>
 <a href="https://profiles.wordpress.org/thatdudebutch">Wayne Stratton</a>
 <a href="https://profiles.wordpress.org/zbtirrell">Zachary Tirrell</a>
-=======
-* <a href="http://profiles.wordpress.org/users/paulhughes01">Paul Hughes</a>
-* <a href="http://profiles.wordpress.org/users/roblagatta">Rob La Gatta</a>
-* <a href="http://profiles.wordpress.org/users/MZAWeb">Daniel Dvorkin</a>
-* <a href="http://profiles.wordpress.org/users/codearachnid">Timothy Wood</a>
-* <a href="http://profiles.wordpress.org/users/jonahcoyote">Jonah West</a>
-* <a href="http://profiles.wordpress.org/users/barryhughes">Barry Hughes</a>
-* <a href="http://profiles.wordpress.org/users/ryancurban">Ryan Urban</a>
-* <a href="http://profiles.wordpress.org/users/kyleunzicker">Kyle Unzicker</a>
-* <a href="http://profiles.wordpress.org/users/jazbek">Jessica Yazbek</a>
-* <a href="http://profiles.wordpress.org/users/jbrinley">Jonathan Brinley</a>
-* <a href="http://profiles.wordpress.org/users/faction23">Samuel Estok</a>
-* <a href="http://profiles.wordpress.org/users/leahkoerper">Leah Koerper</a>
-* <a href="http://profiles.wordpress.org/users/peterchester">Peter Chester</a>
-* <a href="http://profiles.wordpress.org/users/reid.peifer">Reid Peifer</a>
-* <a href="http://profiles.wordpress.org/users/shane.pearlman">Shane Pearlman</a>
->>>>>>> origin/johndcoy
 
 = Past Contributors =
 
@@ -336,7 +309,6 @@ At no point during the 3.0 lifecycle will the major version change. But you can 
 
 == Changelog ==
 
-<<<<<<< HEAD
 = [4.0.6] 2016-02-17 =
 
 * Tweak - Adjust injection of event data into the_content from priority 10 to 9 for better 3rd-party plugin compatibility
@@ -1024,11 +996,6 @@ At no point during the 3.0 lifecycle will the major version change. But you can 
 * Changed some SQL that could trigger a MySQL bug involving an infinite loop. See http://bugs.mysql.com/bug.php?id=21262
 * Fixed some bugs with View As dropdown in Tribe Bar, including a bug in Firefox where you couldn't change the dropdown
 * Removed select2 javascript dependency from front-end
-=======
-= IMPORTANT NOTICE =
-
-3.0 is a complete overhaul of the plugin, and as a result we're starting the changelog fresh. For release notes from the 2.x lifecycle, see <a href="http://m.tri.be/k">our 2.x release notes.</a>
->>>>>>> origin/johndcoy
 
 = 3.0.2 =
 

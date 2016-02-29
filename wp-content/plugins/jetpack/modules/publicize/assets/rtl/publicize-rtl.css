@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 /* This file was automatically generated on Jan 15 2014 20:27:52 */
-=======
-/* This file was automatically generated on Jun 24 2013 19:39:49 */
->>>>>>> origin/johndcoy
 
 div#publicize-services-block {
 	display: block;
@@ -25,7 +21,6 @@ span.pub-logos {
 	vertical-align: top;
 }
 
-<<<<<<< HEAD
 .left, .right{
 	width: 50%;
 	float: right;
@@ -37,12 +32,6 @@ div#linkedin { background: url( ../publicize-linkedin-2x.png )no-repeat; backgro
 div#tumblr { background: url( ../publicize-tumblr-2x.png ) no-repeat; background-size: 32px 32px; padding-right: 42px;background-position: 0px 0px;padding-top:5px;  }
 div#path { background: url( ../publicize-path-2x.png ) no-repeat;  background-size: 32px 32px; padding-right: 42px;background-position: 0px 0px;padding-top:5px;  }
 div#google_plus { background: url( ../publicize-google-2x.png ) no-repeat;  background-size: 32px 32px; padding-right: 42px;background-position: 0px 0px;padding-top:5px;  }
-=======
-span#facebook { background: url( ../facebook-logo.png ) 50% 19px no-repeat; background-size: 125px 47px; }
-span#twitter { background: url( ../twitter-logo.png ) 50% 19px no-repeat; background-size: 125px 47px; }
-span#linkedin { background: url( ../linkedin-logo.png ) 50% 19px no-repeat; background-size: 125px 47px; }
-span#tumblr { background: url( ../tumblr-logo.png ) 50% 19px no-repeat; background-size: 125px 47px; }
->>>>>>> origin/johndcoy
 
 a.publicize-profile-link, a.publicize-profile-link:visited {
 	text-decoration: none;
@@ -206,10 +195,7 @@ input.fb-options {
 	font-family: "Lucida Grande",Verdana,Arial,sans-serif;
 	font-size: 12px;
 }
-<<<<<<< HEAD
 
 .pub-connection-error {
 	color: #ff0000;
 }
-=======
->>>>>>> origin/johndcoy

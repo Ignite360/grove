@@ -10,7 +10,6 @@ function shortcode_handler_bandcamp( $atts ) {
 	// there are no default values, but specify here anyway
 	// to explicitly list supported atts
 	$attributes = shortcode_atts( array(
-<<<<<<< HEAD
 		'album'       => null,     // integer album id
 		'track'       => null,     // integer track id
 		'video'       => null,     // integer track id for video player
@@ -30,22 +29,6 @@ function shortcode_handler_bandcamp( $atts ) {
 		'tracks'      => null,     // comma separated list of allowed tracks
 		'esig'        => null      // hex, no '#' prefix
 	), $atts, 'bandcamp' );
-=======
-		'album'			=> null,		// integer album id
-		'track'			=> null,		// integer track id
-		'size'			=> 'venti',		// one of the supported sizes
-		'bgcol'			=> 'FFFFFF',	// hex, no '#' prefix
-		'linkcol'		=> null,		// hex, no '#' prefix
-		'layout'		=> null,		// encoded layout url
-		'width'			=> null,		// integer with optional "%"
-		'height'		=> null,		// integer with optional "%"
-		'notracklist'	=> null,		// may be string "true" (defaults false)
-		'artwork'		=> null,		// may be string "false" (defaults true)
-		'theme'			=> null,		// may be theme identifier string ("light"|"dark" so far)
-		'package'		=> null,		// integer package id
-		't'				=> null			// integer track number
-	), $atts );
->>>>>>> origin/johndcoy
 
 	$sizes = array(
 		'venti'      => array( 'width' => 400, 'height' => 100 ),
@@ -62,13 +45,8 @@ function shortcode_handler_bandcamp( $atts ) {
 	);
 
 	$sizekey = $attributes['size'];
-<<<<<<< HEAD
 	$height  = null;
 	$width   = null;
-=======
-	$height = null;
-	$width = null;
->>>>>>> origin/johndcoy
 
 	$isVideo = false;
 
@@ -128,7 +106,6 @@ function shortcode_handler_bandcamp( $atts ) {
 		}
 	}
 
-<<<<<<< HEAD
 	if ( ! $height ) {
 		$height    = $sizes[ $sizekey ]['height'];
 		$cssheight = $height . "px";
@@ -136,15 +113,6 @@ function shortcode_handler_bandcamp( $atts ) {
 
 	if ( ! $width ) {
 		$width    = $sizes[ $sizekey ]['width'];
-=======
-	if ( !$height ) {
-		$height = $sizes[$sizekey]['height'];
-		$cssheight = $height . "px";
-	}
-
-	if ( !$width ) {
-		$width = $sizes[$sizekey]['width'];
->>>>>>> origin/johndcoy
 		$csswidth = $width . "px";
 	}
 
@@ -215,11 +183,7 @@ function shortcode_handler_bandcamp( $atts ) {
 		$extraAttrs = '';
 	}
 
-<<<<<<< HEAD
 	return "<iframe width='" . esc_attr( $width ) . "' height='" . esc_attr( $height ) . "' style='position: relative; display: block; width: " . esc_attr( $csswidth ) . "; height: " . esc_attr( $cssheight ) . ";' src='" . esc_url( $url ) . "' allowtransparency='true' frameborder='0'" . $extraAttrs . "></iframe>";
-=======
-	return "<iframe width='" . esc_attr( $width ) . "' height='" . esc_attr( $height ) . "' style='position: relative; display: block; width: " . esc_attr( $csswidth ) . "; height: " . esc_attr( $cssheight ) . ";' src='" . esc_url( $url ) . "' allowtransparency='true' frameborder='0'></iframe>";
->>>>>>> origin/johndcoy
 }
 
 add_shortcode( 'bandcamp', 'shortcode_handler_bandcamp' );
