@@ -146,12 +146,19 @@ function grove_scripts() {
 add_action( 'wp_enqueue_scripts', 'grove_scripts' );
 
 function insert_banner() {
+<<<<<<< HEAD
 
    get_template_part( 'inc/banner', 'home' ); // calls banner-home.php
 
 }
 
 add_action( 'grove_home_after_slider', 'insert_banner' );
+=======
+   get_template_part( 'inc/banner', 'home' ); // calls banner-home.php
+}
+add_action( 'grove_home_after_slider', 'insert_banner' );
+add_action('customize_register', 'child_customize');
+>>>>>>> origin/johndcoy
 
 //add some custom image sizes
 add_image_size( '1170', 1170, 9999 );

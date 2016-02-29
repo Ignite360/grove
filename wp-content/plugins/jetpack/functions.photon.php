@@ -236,6 +236,7 @@ function jetpack_photon_allow_facebook_graph_domain( $allow = false, $domain ) {
 
 	return $allow;
 }
+<<<<<<< HEAD
 
 add_filter( 'jetpack_photon_skip_for_url', 'jetpack_photon_banned_domains', 9, 4 );
 function jetpack_photon_banned_domains( $skip, $image_url, $args, $scheme ) {
@@ -252,3 +253,5 @@ function jetpack_photon_banned_domains( $skip, $image_url, $args, $scheme ) {
 
 	return $skip;
 }
+=======
+>>>>>>> origin/johndcoy

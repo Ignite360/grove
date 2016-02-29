@@ -87,8 +87,14 @@ class Grunion_Contact_Form_Plugin {
 
 		// Export to CSV feature
 		if ( is_admin() ) {
+<<<<<<< HEAD
 			add_action( 'admin_init',            array( $this, 'download_feedback_as_csv' ) );
 			add_action( 'admin_footer-edit.php', array( $this, 'export_form' ) );
+=======
+			add_action( 'admin_init',    array( $this, 'download_feedback_as_csv' ) );
+			add_action( 'load-edit.php', array( $this, 'export_form' ) );
+			add_action( 'admin_footer',  array( $this, 'move_export_form_to_bottom' ) );
+>>>>>>> origin/johndcoy
 		}
 
 		// custom post type we'll use to keep copies of the feedback items
@@ -481,6 +487,7 @@ class Grunion_Contact_Form_Plugin {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Prints the menu
 	 */
 	function export_form() {
@@ -490,6 +497,35 @@ class Grunion_Contact_Form_Plugin {
 		if ( ! current_user_can( 'export' ) ) {
 			return;
 		}
+=======
+	 * There aren't any usable actions in core to output the "export feedback" form in the correct place,
+	 * so this inline JS moves it from the top of the page to the bottom.
+	 */
+	function move_export_form_to_bottom() {
+		if ( get_current_screen()->id != 'edit-feedback' )
+			return;
+
+		// if there aren't any feedbacks, bail out
+		if ( ! (int) wp_count_posts( 'feedback' )->publish )
+			return;
+
+		echo "
+		<script type='text/javascript'>
+		var menu = document.getElementById( 'feedback-export' ),
+		wrapper = document.getElementsByClassName( 'wrap' )[0];
+		wrapper.appendChild(menu);
+		menu.style.display = 'block';
+		</script>
+		";
+	}
+
+	/**
+	 * Prints the menu
+	 */
+	function export_form() {
+		if ( get_current_screen()->id != 'edit-feedback' )
+			return;
+>>>>>>> origin/johndcoy
 
 		// if there aren't any feedbacks, bail out
 		if ( ! (int) wp_count_posts( 'feedback' )->publish )
@@ -503,7 +539,11 @@ class Grunion_Contact_Form_Plugin {
 				<?php wp_nonce_field( 'feedback_export','feedback_export_nonce' ); ?>
 
 				<input name="action" value="feedback_export" type="hidden">
+<<<<<<< HEAD
 				<label for="post"><?php _e( 'Select feedback to download', 'jetpack' ) ?></label>
+=======
+				<label for="post"><? _e( 'Select feedback to download', 'jetpack' ) ?></label>
+>>>>>>> origin/johndcoy
 				<select name="post">
 					<option value="all"><?php esc_html_e( 'All posts', 'jetpack' ) ?></option>
 					<?php echo $this->get_feedbacks_as_options() ?>
@@ -515,6 +555,7 @@ class Grunion_Contact_Form_Plugin {
 		</div>
 
 		<?php
+<<<<<<< HEAD
 		// There aren't any usable actions in core to output the "export feedback" form in the correct place,
 		// so this inline JS moves it from the top of the page to the bottom.
 		?>
@@ -719,6 +760,8 @@ class Grunion_Contact_Form_Plugin {
 		}
 
 		return $result;
+=======
+>>>>>>> origin/johndcoy
 	}
 
 	/**
@@ -730,15 +773,23 @@ class Grunion_Contact_Form_Plugin {
 
 		check_admin_referer( 'feedback_export', 'feedback_export_nonce' );
 
+<<<<<<< HEAD
 		if ( ! current_user_can( 'export' ) ) {
 			return;
 		}
 
+=======
+>>>>>>> origin/johndcoy
 		$args = array(
 			'posts_per_page'   => -1,
 			'post_type'        => 'feedback',
 			'post_status'      => 'publish',
+<<<<<<< HEAD
 			'order'            => 'ASC',
+=======
+			'meta_key'         => '_feedback_subject',
+			'orderby'          => 'meta_value',
+>>>>>>> origin/johndcoy
 			'fields'           => 'ids',
 			'suppress_filters' => false,
 		);
@@ -752,6 +803,7 @@ class Grunion_Contact_Form_Plugin {
 		}
 
 		$feedbacks = get_posts( $args );
+<<<<<<< HEAD
 
 		if ( empty( $feedbacks ) ) {
 			return;
@@ -781,6 +833,14 @@ class Grunion_Contact_Form_Plugin {
 		 */
 		$row_count = count( reset( $data ) );
 
+=======
+		$filename  = sanitize_file_name( $filename );
+		$fields    = $this->get_field_names( $feedbacks );
+		array_unshift( $fields, __( 'Contact Form', 'jetpack' ) );
+
+		if ( empty( $feedbacks ) )
+			return;
+>>>>>>> origin/johndcoy
 
 		// Forces the download of the CSV instead of echoing
 		header( 'Content-Disposition: attachment; filename=' . $filename );
@@ -790,6 +850,7 @@ class Grunion_Contact_Form_Plugin {
 
 		$output = fopen( 'php://output', 'w' );
 
+<<<<<<< HEAD
 		/**
 		 * Print CSV headers
 		 */
@@ -814,6 +875,14 @@ class Grunion_Contact_Form_Plugin {
 			 * Output the complete CSV row
 			 */
 			fputcsv( $output, $current_row );
+=======
+		// Prints the header
+		fputcsv( $output, $fields );
+
+		// Create the csv string from the array of post ids
+		foreach ( $feedbacks as $feedback ) {
+			fputcsv( $output, self::make_csv_row_from_feedback( $feedback, $fields ) );
+>>>>>>> origin/johndcoy
 		}
 
 		fclose( $output );
@@ -830,7 +899,11 @@ class Grunion_Contact_Form_Plugin {
 		// Get the feedbacks' parents' post IDs
 		$feedbacks = get_posts( array(
 			'fields'           => 'id=>parent',
+<<<<<<< HEAD
 			'posts_per_page'   => 100000,
+=======
+			'posts_per_page'   => -1,
+>>>>>>> origin/johndcoy
 			'post_type'        => 'feedback',
 			'post_status'      => 'publish',
 			'suppress_filters' => false,
@@ -839,7 +912,11 @@ class Grunion_Contact_Form_Plugin {
 
 		$posts = get_posts( array(
 			'orderby'          => 'ID',
+<<<<<<< HEAD
 			'posts_per_page'   => 1000,
+=======
+			'posts_per_page'   => -1,
+>>>>>>> origin/johndcoy
 			'post_type'        => 'any',
 			'post__in'         => array_values( $parents ),
 			'suppress_filters' => false,
@@ -857,28 +934,38 @@ class Grunion_Contact_Form_Plugin {
 	 * Get the names of all the form's fields
 	 *
 	 * @param  array|int $posts the post we want the fields of
+<<<<<<< HEAD
 	 *
 	 * @return array     the array of fields
 	 *
 	 * @deprecated As this is no longer necessary as of the CSV export rewrite. - 2015-12-29
+=======
+	 * @return array     the array of fields
+>>>>>>> origin/johndcoy
 	 */
 	protected function get_field_names( $posts ) {
 		$posts = (array) $posts;
 		$all_fields = array();
 
 		foreach ( $posts as $post ){
+<<<<<<< HEAD
 			$fields = self::parse_fields_from_content( $post );
 
 			if ( isset( $fields['_feedback_all_fields'] ) ) {
 				$extra_fields = array_keys( $fields['_feedback_all_fields'] );
 				$all_fields = array_merge( $all_fields, $extra_fields );
 			}
+=======
+			$extra_fields = array_keys( get_post_meta( $post, '_feedback_all_fields', true ) );
+			$all_fields = array_merge( $all_fields, $extra_fields );
+>>>>>>> origin/johndcoy
 		}
 
 		$all_fields = array_unique( $all_fields );
 		return $all_fields;
 	}
 
+<<<<<<< HEAD
 	public static function parse_fields_from_content( $post_id ) {
 		static $post_fields;
 
@@ -932,12 +1019,15 @@ class Grunion_Contact_Form_Plugin {
 		return $fields;
 	}
 
+=======
+>>>>>>> origin/johndcoy
 	/**
 	 * Creates a valid csv row from a post id
 	 *
 	 * @param  int    $post_id The id of the post
 	 * @param  array  $fields  An array containing the names of all the fields of the csv
 	 * @return String The csv row
+<<<<<<< HEAD
 	 *
 	 * @deprecated This is no longer needed, as of the CSV export rewrite.
 	 */
@@ -956,6 +1046,14 @@ class Grunion_Contact_Form_Plugin {
 
 		// The first element in all of the exports will be the subject
 		$row_items[] = $content_fields['_feedback_subject'];
+=======
+	 */
+	protected static function make_csv_row_from_feedback( $post_id, $fields ) {
+		$all_fields = get_post_meta( $post_id, '_feedback_all_fields', true );
+
+		// The first element in all of the exports will be the subject
+		$row_items[] = get_post_meta( $post_id, '_feedback_subject', true );
+>>>>>>> origin/johndcoy
 
 		// Loop the fields array in order to fill the $row_items array correctly
 		foreach ( $fields as $field ) {
@@ -969,10 +1067,13 @@ class Grunion_Contact_Form_Plugin {
 
 		return $row_items;
 	}
+<<<<<<< HEAD
 
 	public static function get_ip_address() {
 		return isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : null;
 	}
+=======
+>>>>>>> origin/johndcoy
 }
 
 /**

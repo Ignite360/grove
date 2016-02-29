@@ -175,6 +175,14 @@
 			jQuery( '.' + service + '-extra-options' ).fadeOut( 'slow' );
 		}
 
+		function showExtraOptions( service ) {
+			jQuery( '.' + service + '-extra-options' ).css( { backgroundColor: '#ffffcc' } ).fadeIn();
+		}
+
+		function hideExtraOptions( service ) {
+			jQuery( '.' + service + '-extra-options' ).fadeOut( 'slow' );
+		}
+
 		function save_services() {
 			$( '#enabled-services h3 img' ).show();
 

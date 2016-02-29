@@ -1,9 +1,12 @@
 <?php
 
 class Jetpack_Client {
+<<<<<<< HEAD
 	const WPCOM_JSON_API_HOST    = 'public-api.wordpress.com';
 	const WPCOM_JSON_API_VERSION = '1.1';
 
+=======
+>>>>>>> origin/johndcoy
 	/**
 	 * Makes an authorized remote request using Jetpack_Signature
 	 *
@@ -48,6 +51,7 @@ class Jetpack_Client {
 
 		$token_key = sprintf( '%s:%d:%d', $token_key, JETPACK__API_VERSION, $token->external_user_id );
 
+<<<<<<< HEAD
 		require_once JETPACK__PLUGIN_DIR . 'class.jetpack-signature.php';
 
 		$time_diff = (int) Jetpack_Options::get_option( 'time_diff' );
@@ -60,6 +64,15 @@ class Jetpack_Client {
 		} else {
 			$nonce = substr( sha1( rand( 0, 1000000 ) ), 0, 10);
 		}
+=======
+		require_once dirname( __FILE__ ) . '/class.jetpack-signature.php';
+
+		$time_diff = (int) Jetpack::get_option( 'time_diff' );
+		$jetpack_signature = new Jetpack_Signature( $token->secret, $time_diff );
+
+		$timestamp = time() + $time_diff;
+		$nonce = wp_generate_password( 10, false );
+>>>>>>> origin/johndcoy
 
 		// Kind of annoying.  Maybe refactor Jetpack_Signature to handle body-hashing
 		if ( is_null( $body ) ) {
@@ -80,8 +93,13 @@ class Jetpack_Client {
 
 		if ( false !== strpos( $args['url'], 'xmlrpc.php' ) ) {
 			$url_args = array(
+<<<<<<< HEAD
 				'for'           => 'jetpack',
 				'wpcom_blog_id' => Jetpack_Options::get_option( 'id' ),
+=======
+				'for'     => 'jetpack',
+				'blog_id' => $args['blog_id'],
+>>>>>>> origin/johndcoy
 			);
 		} else {
 			$url_args = array();
@@ -92,7 +110,11 @@ class Jetpack_Client {
 		}
 
 		$url = add_query_arg( urlencode_deep( $url_args ), $args['url'] );
+<<<<<<< HEAD
 		$url = Jetpack::fix_url_for_bad_hosts( $url );
+=======
+		$url = Jetpack::fix_url_for_bad_hosts( $url, $request );
+>>>>>>> origin/johndcoy
 
 		$signature = $jetpack_signature->sign_request( $token_key, $timestamp, $nonce, $body_hash, $method, $url, $body, false );
 
@@ -129,11 +151,16 @@ class Jetpack_Client {
 	 * The option is checked on each request.
 	 *
 	 * @internal
+<<<<<<< HEAD
+=======
+	 * @todo: Better fallbacks (bundled certs?), feedback, UI, ....
+>>>>>>> origin/johndcoy
 	 * @see Jetpack::fix_url_for_bad_hosts()
 	 *
 	 * @return array|WP_Error WP HTTP response on success
 	 */
 	public static function _wp_remote_request( $url, $args, $set_fallback = false ) {
+<<<<<<< HEAD
 		/**
 		 * SSL verification (`sslverify`) for the JetpackClient remote request
 		 * defaults to off, use this filter to force it on.
@@ -152,6 +179,11 @@ class Jetpack_Client {
 		$fallback = Jetpack_Options::get_option( 'fallback_no_verify_ssl_certs' );
 		if ( false === $fallback ) {
 			Jetpack_Options::update_option( 'fallback_no_verify_ssl_certs', 0 );
+=======
+		$fallback = Jetpack::get_option( 'fallback_no_verify_ssl_certs' );
+		if ( false === $fallback ) {
+			Jetpack::update_option( 'fallback_no_verify_ssl_certs', 0 );
+>>>>>>> origin/johndcoy
 		}
 
 		if ( (int) $fallback ) {
@@ -200,7 +232,11 @@ class Jetpack_Client {
 
 		if ( !is_wp_error( $response ) ) {
 			// The request went through this time, flag for future fallbacks
+<<<<<<< HEAD
 			Jetpack_Options::update_option( 'fallback_no_verify_ssl_certs', time() );
+=======
+			Jetpack::update_option( 'fallback_no_verify_ssl_certs', time() );
+>>>>>>> origin/johndcoy
 			Jetpack_Client::set_time_diff( $response, $set_fallback );
 		}
 
@@ -226,6 +262,7 @@ class Jetpack_Client {
 		$time_diff = $time - time();
 
 		if ( $force_set ) { // during register
+<<<<<<< HEAD
 			Jetpack_Options::update_option( 'time_diff', $time_diff );
 		} else { // otherwise
 			$old_diff = Jetpack_Options::get_option( 'time_diff' );
@@ -279,4 +316,14 @@ class Jetpack_Client {
 		return Jetpack_Client::remote_request( $validated_args, $body );
 	}
 
+=======
+			Jetpack::update_option( 'time_diff', $time_diff );
+		} else { // otherwise
+			$old_diff = Jetpack::get_option( 'time_diff' );
+			if ( false === $old_diff || abs( $time_diff - (int) $old_diff ) > 10 ) {
+				Jetpack::update_option( 'time_diff', $time_diff );
+			}
+		}
+	}
+>>>>>>> origin/johndcoy
 }

@@ -8,11 +8,19 @@ class Jetpack_Data {
 	 */
 	public static function get_access_token( $user_id = false ) {
 		if ( $user_id ) {
+<<<<<<< HEAD
 			if ( !$tokens = Jetpack_Options::get_option( 'user_tokens' ) ) {
 				return false;
 			}
 			if ( $user_id === JETPACK_MASTER_USER ) {
 				if ( !$user_id = Jetpack_Options::get_option( 'master_user' ) ) {
+=======
+			if ( !$tokens = Jetpack::get_option( 'user_tokens' ) ) {
+				return false;
+			}
+			if ( $user_id === JETPACK_MASTER_USER ) {
+				if ( !$user_id = Jetpack::get_option( 'master_user' ) ) {
+>>>>>>> origin/johndcoy
 					return false;
 				}
 			}
@@ -28,7 +36,11 @@ class Jetpack_Data {
 			}
 			$token = "{$token_chunks[0]}.{$token_chunks[1]}";
 		} else {
+<<<<<<< HEAD
 			$token = Jetpack_Options::get_option( 'blog_token' );
+=======
+			$token = Jetpack::get_option( 'blog_token' );
+>>>>>>> origin/johndcoy
 			if ( empty( $token ) ) {
 				return false;
 			}
@@ -39,6 +51,7 @@ class Jetpack_Data {
 			'external_user_id' => (int) $user_id,
 		);
 	}
+<<<<<<< HEAD
 
 	/**
 	 * This function mirrors Jetpack_Data::is_usable_domain() in the WPCOM codebase.
@@ -122,4 +135,6 @@ class Jetpack_Data {
 
 		return false;
 	}
+=======
+>>>>>>> origin/johndcoy
 }

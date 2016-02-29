@@ -103,7 +103,15 @@
 	 * Resizing logic
 	 */
 
+<<<<<<< HEAD
 	var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+=======
+	this.item.hover(
+		function() { $( this ).find( '.tiled-gallery-caption' ).slideDown( 'fast' ); },
+		function() { $( this ).find( '.tiled-gallery-caption' ).slideUp( 'fast' ); }
+	);
+};
+>>>>>>> origin/johndcoy
 
 	function attachResizeInAnimationFrames( tiledGalleries ) {
 		var resizing = false;
@@ -148,6 +156,21 @@
 		$( document ).on( 'page-rendered.wpcom-newdash', function() {
 			tiledGalleries.findAndSetupNewGalleries();
 		} );
+<<<<<<< HEAD
+=======
+
+		thisGallery.removeClass( 'tiled-gallery-unresized' );
+	} );
+};
+
+/**
+ * Ready, set...
+ */
+$( document ).ready( function() {
+
+	// Instance!
+	var TiledGalleryInstance = new TiledGallery;
+>>>>>>> origin/johndcoy
 
 		// Chrome is a unique snow flake and will start lagging on occasion
 		// It helps if we only resize on animation frames

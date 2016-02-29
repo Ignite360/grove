@@ -147,6 +147,173 @@ class Jetpack_Tiled_Gallery {
 		return '';
 	}
 
+<<<<<<< HEAD
+=======
+	public function rectangular_talavera( $attachments ) {
+		$grouper = new Jetpack_Tiled_Gallery_Grouper( $attachments );
+
+		Jetpack_Tiled_Gallery_Shape::reset_last_shape();
+
+		$output = $this->generate_carousel_container();
+		foreach ( $grouper->grouped_images as $row ) {
+			$output .= '<div class="gallery-row" style="' . esc_attr( 'width: ' . $row->width . 'px; height: ' . ( $row->height - 4 ) . 'px;' ) . '">';
+			foreach( $row->groups as $group ) {
+				$count = count( $group->images );
+				$output .= '<div class="gallery-group images-' . esc_attr( $count ) . '" style="' . esc_attr( 'width: ' . $group->width . 'px; height: ' . $group->height . 'px;' ) . '">';
+				foreach ( $group->images as $image ) {
+
+					$size = 'large';
+					if ( $image->width < 250 )
+						$size = 'small';
+
+					$image_title = $image->post_title;
+					$orig_file = wp_get_attachment_url( $image->ID );
+					$link = $this->get_attachment_link( $image->ID, $orig_file );
+
+					$img_src = add_query_arg( array( 'w' => $image->width, 'h' => $image->height ), $orig_file );
+
+					$output .= '<div class="tiled-gallery-item tiled-gallery-item-' . esc_attr( $size ) . '"><a href="' . esc_url( $link ) . '"><img ' . $this->generate_carousel_image_args( $image ) . ' src="' . esc_url( $img_src ) . '" width="' . esc_attr( $image->width ) . '" height="' . esc_attr( $image->height ) . '" align="left" title="' . esc_attr( $image_title ) . '" /></a>';
+
+					if ( $this->atts['grayscale'] == true ) {
+						$img_src_grayscale = jetpack_photon_url( $img_src, array( 'filter' => 'grayscale' ) );
+						$output .= '<a href="'. esc_url( $link ) . '"><img ' . $this->generate_carousel_image_args( $image ) . ' class="grayscale" src="' . esc_url( $img_src_grayscale ) . '" width="' . esc_attr( $image->width ) . '" height="' . esc_attr( $image->height ) . '" align="left" title="' . esc_attr( $image_title ) . '" /></a>';
+					}
+
+					if ( trim( $image->post_excerpt ) )
+						$output .= '<div class="tiled-gallery-caption">' . wptexturize( $image->post_excerpt ) . '</div>';
+
+					$output .= '</div>';
+				}
+				$output .= '</div>';
+			}
+			$output .= '</div>';
+		}
+		$output .= '</div>';
+		return $output;
+	}
+
+	public function square_talavera( $attachments ) {
+		$content_width = self::get_content_width();
+		$images_per_row = 3;
+		$margin = 2;
+
+		$margin_space = ( $images_per_row * $margin ) * 2;
+		$size = floor( ( $content_width - $margin_space ) / $images_per_row );
+		$remainder = count( $attachments ) % $images_per_row;
+		if ( $remainder > 0 ) {
+			$remainder_space = ( $remainder * $margin ) * 2;
+			$remainder_size = ceil( ( $content_width - $remainder_space - $margin ) / $remainder );
+		}
+		$output = $this->generate_carousel_container();
+		$c = 1;
+		foreach( $attachments as $image ) {
+			if ( $remainder > 0 && $c <= $remainder )
+				$img_size = $remainder_size;
+			else
+				$img_size = $size;
+
+			$orig_file = wp_get_attachment_url( $image->ID );
+			$link = $this->get_attachment_link( $image->ID, $orig_file );
+			$image_title = $image->post_title;
+
+			$img_src = add_query_arg( array( 'w' => $img_size, 'h' => $img_size, 'crop' => 1 ), $orig_file );
+
+			$output .= '<div class="tiled-gallery-item">';
+			$output .= '<a border="0" href="' . esc_url( $link ) . '"><img ' . $this->generate_carousel_image_args( $image ) . ' style="' . esc_attr( 'margin: ' . $margin . 'px' ) . '" src="' . esc_url( $img_src ) . '" width=' . esc_attr( $img_size ) . ' height=' . esc_attr( $img_size ) . ' title="' . esc_attr( $image_title ) . '" /></a>';
+
+			// Grayscale effect
+			if ( $this->atts['grayscale'] == true ) {
+				$src = urlencode( $image->guid );
+				$output .= '<a border="0" href="' . esc_url( $link ) . '"><img ' . $this->generate_carousel_image_args( $image ) . ' style="margin: 2px" class="grayscale" src="' . esc_url( 'http://en.wordpress.com/imgpress?url=' . urlencode( $image->guid ) . '&resize=' . $img_size . ',' . $img_size . '&filter=grayscale' ) . '" width=' . esc_attr( $img_size ) . ' height=' . esc_attr( $img_size ) . ' title="' . esc_attr( $image_title ) . '" /></a>';
+			}
+
+			// Captions
+			if ( trim( $image->post_excerpt ) )
+				$output .= '<div class="tiled-gallery-caption">' . wptexturize( $image->post_excerpt ) . '</div>';
+			$output .= '</div>';
+			$c ++;
+		}
+		$output .= '</div>';
+		return $output;
+	}
+
+	public function circle_talavera( $attachments ) {
+		return $this->square_talavera( $attachments );
+	}
+
+	public function rectangle_talavera( $attachments ) {
+		return $this->rectangular_talavera( $attachments );
+	}
+
+	function generate_carousel_container() {
+		global $post;
+
+		$html = '<div '. $this->gallery_classes() . ' data-original-width="' . esc_attr( self::get_content_width() ) . '">';
+		$blog_id = (int) get_current_blog_id();
+
+		if ( defined( 'IS_WPCOM' ) && IS_WPCOM ) {
+			$likes_blog_id = $blog_id;
+		} else {
+			$jetpack = Jetpack::init();
+			$likes_blog_id = $jetpack->get_option( 'id' );
+		}
+
+		$extra_data = array( 'data-carousel-extra' => array( 'blog_id' => $blog_id, 'permalink' => get_permalink( $post->ID ), 'likes_blog_id' => $likes_blog_id ) );
+
+		foreach ( (array) $extra_data as $data_key => $data_values ) {
+			$html = str_replace( '<div ', '<div ' . esc_attr( $data_key ) . "='" . json_encode( $data_values ) . "' ", $html );
+		}
+
+		return $html;
+	}
+
+	function generate_carousel_image_args( $image ) {
+		$attachment_id = $image->ID;
+		$orig_file       = wp_get_attachment_url( $attachment_id );
+		$meta            = wp_get_attachment_metadata( $attachment_id );
+		$size            = isset( $meta['width'] ) ? intval( $meta['width'] ) . ',' . intval( $meta['height'] ) : '';
+		$img_meta        = ( ! empty( $meta['image_meta'] ) ) ? (array) $meta['image_meta'] : array();
+		$comments_opened = intval( comments_open( $attachment_id ) );
+
+		$medium_file_info = wp_get_attachment_image_src( $attachment_id, 'medium' );
+		$medium_file      = isset( $medium_file_info[0] ) ? $medium_file_info[0] : '';
+
+		$large_file_info  = wp_get_attachment_image_src( $attachment_id, 'large' );
+		$large_file       = isset( $large_file_info[0] ) ? $large_file_info[0] : '';
+		$attachment_title = wptexturize( $image->post_title );
+		$attachment_desc  = wpautop( wptexturize( $image->post_content ) );
+
+        // Not yet providing geo-data, need to "fuzzify" for privacy
+		if ( ! empty( $img_meta ) ) {
+            foreach ( $img_meta as $k => $v ) {
+                if ( 'latitude' == $k || 'longitude' == $k )
+                    unset( $img_meta[$k] );
+            }
+        }
+
+		$img_meta = json_encode( array_map( 'strval', $img_meta ) );
+
+		$output = sprintf(
+				'data-attachment-id="%1$d" data-orig-file="%2$s" data-orig-size="%3$s" data-comments-opened="%4$s" data-image-meta="%5$s" data-image-title="%6$s" data-image-description="%7$s" data-medium-file="%8$s" data-large-file="%9$s"',
+				esc_attr( $attachment_id ),
+				esc_url( wp_get_attachment_url( $attachment_id ) ),
+				esc_attr( $size ),
+				esc_attr( $comments_opened ),
+				esc_attr( $img_meta ),
+				esc_attr( $attachment_title ),
+				esc_attr( $attachment_desc ),
+				esc_url( $medium_file ),
+				esc_url( $large_file )
+			);
+		return $output;
+	}
+
+	public function gallery_classes() {
+		$classes = 'class="tiled-gallery type-' . esc_attr( $this->atts['type'] ) . ' tiled-gallery-unresized"';
+		return $classes;
+	}
+
+>>>>>>> origin/johndcoy
 	public static function gallery_already_redefined() {
 		global $shortcode_tags;
 		$redefined = false;

@@ -24,6 +24,8 @@ class Publicize extends Publicize_Base {
 		add_action( 'wp_ajax_publicize_google_plus_options_save', array( $this, 'options_save_google_plus' ) );
 
 		add_action( 'load-settings_page_sharing', array( $this, 'force_user_connection' ) );
+		
+		add_filter( 'publicize_checkbox_default', array( $this, 'publicize_checkbox_default' ), 10, 4 );
 
 		add_filter( 'publicize_checkbox_default', array( $this, 'publicize_checkbox_default' ), 10, 4 );
 
@@ -737,5 +739,16 @@ class Publicize extends Publicize_Base {
 				}
 			}
 		}
+	}
+	
+	/** 
+	* Already-published posts should not be Publicized by default. This filter sets checked to 
+	* false if a post has already been published. 
+	*/ 
+	function publicize_checkbox_default( $checked, $post_id, $name, $connection ) { 
+		if ( 'publish' == get_post_status( $post_id ) ) 
+			return false; 
+
+		return $checked; 
 	}
 }

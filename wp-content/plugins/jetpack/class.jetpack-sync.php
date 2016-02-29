@@ -6,6 +6,7 @@
  */
 class Jetpack_Sync {
 	// What modules want to sync what content
+<<<<<<< HEAD
 	public $sync_conditions = array( 'posts' => array(), 'comments' => array() );
 
 	// We keep track of all the options registered for sync so that we can sync them all if needed
@@ -19,10 +20,24 @@ class Jetpack_Sync {
 
 	// Objects to sync
 	public $sync = array();
+=======
+	var $sync_conditions = array( 'posts' => array(), 'comments' => array() );
+
+	// We keep track of all the options registered for sync so that we can sync them all if needed
+	var $sync_options = array();
+
+	// Keep trac of status transitions, which we wouldn't always know about on the Jetpack Servers but are important when deciding what to do with the sync.
+	var $post_transitions = array();
+	var $comment_transitions = array();
+
+	// Objects to sync
+	var $sync = array();
+>>>>>>> origin/johndcoy
 
 	function __construct() {
 		// WP Cron action.  Only used on upgrade
 		add_action( 'jetpack_sync_all_registered_options', array( $this, 'sync_all_registered_options' ) );
+<<<<<<< HEAD
 		add_action( 'jetpack_heartbeat',  array( $this, 'sync_all_registered_options' ) );
 
 		// Sync constants on heartbeat and plugin upgrade and connects
@@ -31,6 +46,8 @@ class Jetpack_Sync {
 		add_action( 'jetpack_heartbeat',  array( $this, 'sync_all_constants' ) );
 
 		add_action( 'jetpack_activate_module', array( $this, 'sync_module_constants' ), 10, 1 );
+=======
+>>>>>>> origin/johndcoy
 	}
 
 /* Static Methods for Modules */
@@ -42,7 +59,10 @@ class Jetpack_Sync {
 	 *	post_stati => array( post_status slugs ): The post stati to sync.  Default: publish
 	 */
 	static function sync_posts( $file, array $settings = null ) {
+<<<<<<< HEAD
 		if ( is_network_admin() ) return;
+=======
+>>>>>>> origin/johndcoy
 		$jetpack = Jetpack::init();
 		$args = func_get_args();
 		return call_user_func_array( array( $jetpack->sync, 'posts' ), $args );
@@ -57,7 +77,10 @@ class Jetpack_Sync {
 	 * 	comment_stati => array( comment_status slugs ): The comment stati to sync.  Default: approved
 	 */
 	static function sync_comments( $file, array $settings = null ) {
+<<<<<<< HEAD
 		if ( is_network_admin() ) return;
+=======
+>>>>>>> origin/johndcoy
 		$jetpack = Jetpack::init();
 		$args = func_get_args();
 		return call_user_func_array( array( $jetpack->sync, 'comments' ), $args );
@@ -69,11 +92,15 @@ class Jetpack_Sync {
 	 * @param string $option ...
 	 */
 	static function sync_options( $file, $option /*, $option, ... */ ) {
+<<<<<<< HEAD
 		if ( is_network_admin() ) return;
+=======
+>>>>>>> origin/johndcoy
 		$jetpack = Jetpack::init();
 		$args = func_get_args();
 		return call_user_func_array( array( $jetpack->sync, 'options' ), $args );
 	}
+<<<<<<< HEAD
 	/**
 	 * @param string $file __FILE__
 	 * @param string $option, Option name to sync
@@ -85,6 +112,8 @@ class Jetpack_Sync {
 		$args = func_get_args();
 		return call_user_func_array( array( $jetpack->sync, 'constant' ), $args );
 	}
+=======
+>>>>>>> origin/johndcoy
 
 /* Internal Methods */
 
@@ -98,9 +127,13 @@ class Jetpack_Sync {
 	function register( $object, $id = false, array $settings = null ) {
 		// Since we've registered something for sync, hook it up to execute on shutdown if we haven't already
 		if ( !$this->sync ) {
+<<<<<<< HEAD
 			if ( function_exists( 'ignore_user_abort' ) ) {
 				ignore_user_abort( true );
 			}
+=======
+			ignore_user_abort( true );
+>>>>>>> origin/johndcoy
 			add_action( 'shutdown', array( $this, 'sync' ), 9 ); // Right before async XML-RPC
 		}
 
@@ -155,7 +188,10 @@ class Jetpack_Sync {
 		$sync_data = array(
 			'modules' => $modules,
 			'version' => JETPACK__VERSION,
+<<<<<<< HEAD
 			'is_multisite' => is_multisite(),
+=======
+>>>>>>> origin/johndcoy
 		);
 
 		return $sync_data;
@@ -169,11 +205,14 @@ class Jetpack_Sync {
 			return false;
 		}
 
+<<<<<<< HEAD
 		// Don't sync anything from a staging site.
 		if ( Jetpack::is_development_mode() || Jetpack::is_staging_site() ) {
 			return false;
 		}
 
+=======
+>>>>>>> origin/johndcoy
 		$sync_data = $this->get_common_sync_data();
 
 		$wp_importing = defined( 'WP_IMPORTING' ) && WP_IMPORTING;
@@ -220,6 +259,7 @@ class Jetpack_Sync {
 				break;
 			case 'option' :
 				foreach ( $sync_operations as $option => $settings ) {
+<<<<<<< HEAD
 					$sync_data['option'][ $option ] = array( 'value' => get_option( $option ) );
 				}
 				break;
@@ -227,6 +267,9 @@ class Jetpack_Sync {
 			case 'constant' :
 				foreach( $sync_operations as $constant => $settings ) {
 					$sync_data['constant'][ $constant ] = array( 'value' => $this->get_constant( $constant ) );
+=======
+					$sync_data['option'][$option] = array( 'value' => get_option( $option ) );
+>>>>>>> origin/johndcoy
 				}
 				break;
 
@@ -243,6 +286,10 @@ class Jetpack_Sync {
 				break;
 			}
 		}
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/johndcoy
 		Jetpack::xmlrpc_async_call( 'jetpack.syncContent', $sync_data );
 	}
 
@@ -383,7 +430,10 @@ class Jetpack_Sync {
 		$delete_on_behalf_of = array();
 		$submit_on_behalf_of = array();
 		$delete_stati = array( 'delete' );
+<<<<<<< HEAD
 		$cache_cleared = false;
+=======
+>>>>>>> origin/johndcoy
 
 		foreach ( $module_conditions as $module => $conditions ) {
 			if ( !in_array( $post->post_type, $conditions['post_types'] ) ) {
@@ -395,11 +445,15 @@ class Jetpack_Sync {
 			if ( $deleted_post ) {
 				$delete_on_behalf_of[] = $module;
 			} else {
+<<<<<<< HEAD
 				if ( ! $cache_cleared ) {
 					// inefficient to clear cache more than once
 					clean_post_cache( $post->ID );
 					$cache_cleared = true;
 				}
+=======
+				clean_post_cache( $post->ID );
+>>>>>>> origin/johndcoy
 				$new_status = get_post_status( $post->ID ); // Inherited status is resolved here
 			}
 
@@ -467,7 +521,11 @@ class Jetpack_Sync {
 		);
 
 		if ( $this->is_post_public( $post ) ) {
+<<<<<<< HEAD
 			$post['post_is_public'] = Jetpack_Options::get_option( 'public' );
+=======
+			$post['post_is_public'] = Jetpack::get_option( 'public' );
+>>>>>>> origin/johndcoy
 		} else {
 			//obscure content
 			$post['post_content'] = '';
@@ -499,11 +557,15 @@ class Jetpack_Sync {
 		$post['extra'] = array(
 			'author' => get_the_author_meta( 'display_name', $post_obj->post_author ),
 			'author_email' => get_the_author_meta( 'email', $post_obj->post_author ),
+<<<<<<< HEAD
 			'dont_email_post_to_subs' => get_post_meta( $post_obj->ID, '_jetpack_dont_email_post_to_subs', true ),
+=======
+>>>>>>> origin/johndcoy
 		);
 
 		if ( $fid = get_post_thumbnail_id( $id ) ) {
 			$feature = wp_get_attachment_image_src( $fid, 'large' );
+<<<<<<< HEAD
 			if ( ! empty( $feature[0] ) ) {
 				$post['extra']['featured_image'] = $feature[0];
 			}
@@ -542,10 +604,15 @@ class Jetpack_Sync {
 				 */
 				$post['extra']['post_thumbnail'] = (object) apply_filters( 'get_attachment', $post['extra']['post_thumbnail'] );
 			}
+=======
+			if ( !empty( $feature[0] ) )
+				$post['extra']['featured_image'] = $feature[0];
+>>>>>>> origin/johndcoy
 		}
 
 		$post['permalink'] = get_permalink( $post_obj->ID );
 		$post['shortlink'] = wp_get_shortlink( $post_obj->ID );
+<<<<<<< HEAD
 		/**
 		 * Allow modules to send extra info on the sync post process.
 		 *
@@ -555,6 +622,8 @@ class Jetpack_Sync {
 		 * @param Object $post_obj Object returned by get_post() for a given post ID.
 		 */
 		$post['module_custom_data'] = apply_filters( 'jetpack_sync_post_module_custom_data', array(), $post_obj );
+=======
+>>>>>>> origin/johndcoy
 		return $post;
 	}
 
@@ -761,7 +830,11 @@ class Jetpack_Sync {
 		$this->register( 'delete_option', $option );
 	}
 
+<<<<<<< HEAD
 	function updated_option_action() {
+=======
+	function updated_option_action( $old_value ) {
+>>>>>>> origin/johndcoy
 		// The value of $option isn't passed to the filter
 		// Calculate it
 		$option = current_filter();
@@ -788,13 +861,23 @@ class Jetpack_Sync {
 		}
 	}
 
+<<<<<<< HEAD
 	function sync_all_registered_options() {
 		if ( 'jetpack_sync_all_registered_options' == current_filter() ) {
 			add_action( 'shutdown', array( $this, 'register_all_options' ), 8 );
+=======
+	function sync_all_registered_options( $options = array() ) {
+		if ( 'jetpack_sync_all_registered_options' == current_filter() ) {
+			$all_registered_options = array_unique( call_user_func_array( 'array_merge', $this->sync_options ) );
+			foreach ( $all_registered_options as $option ) {
+				$this->added_option_action( $option );
+			}
+>>>>>>> origin/johndcoy
 		} else {
 			wp_schedule_single_event( time(), 'jetpack_sync_all_registered_options', array( $this->sync_options ) );
 		}
 	}
+<<<<<<< HEAD
 
 	/**
 	 * All the options that are defined in modules as well as class.jetpack.php will get synced.
@@ -1101,4 +1184,6 @@ EOT;
 
 		return null;
 	}
+=======
+>>>>>>> origin/johndcoy
 }

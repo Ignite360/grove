@@ -754,6 +754,7 @@ class Jetpack_Custom_CSS {
 		if ( $css == '' )
 			return;
 
+<<<<<<< HEAD
 		if (
 			/**
 			 * Allow inserting CSS inline instead of through a separate file.
@@ -769,6 +770,13 @@ class Jetpack_Custom_CSS {
 		) {
 
 			echo "\r\n" . '<style id="custom-css-css">' . Jetpack_Custom_CSS::get_css( true ) . "</style>\r\n";
+=======
+		$href = home_url( '/' );
+		$href = add_query_arg( 'custom-css', 1, $href );
+		$href = add_query_arg( 'csblog', $blog_id, $href );
+		$href = add_query_arg( 'cscache', 6, $href );
+		$href = add_query_arg( 'csrev', (int) get_option( $option . '_rev' ), $href );
+>>>>>>> origin/johndcoy
 
 		} else {
 

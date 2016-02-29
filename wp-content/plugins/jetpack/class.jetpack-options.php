@@ -104,8 +104,16 @@ class Jetpack_Options {
 	 * @param mixed $default (optional)
 	 */
 	public static function get_option( $name, $default = false ) {
+<<<<<<< HEAD
 		if ( self::is_valid( $name, 'non_compact' ) ) {
 			return get_option( "jetpack_$name", $default );
+=======
+		if ( in_array( $name, self::get_option_names( 'non_compact' ) ) ) {
+			return get_option( "jetpack_$name" );
+		} else if ( !in_array( $name, self::get_option_names() ) ) {
+			trigger_error( sprintf( 'Invalid Jetpack option name: %s', $name ), E_USER_WARNING );
+			return false;
+>>>>>>> origin/johndcoy
 		}
 
 		foreach ( array_keys( self::$grouped_options ) as $group ) {
@@ -136,6 +144,7 @@ class Jetpack_Options {
 	 * @param mixed $value Option value
 	 * @param string $autoload If not compact option, allows specifying whether to autoload or not.
 	 */
+<<<<<<< HEAD
 	public static function update_option( $name, $value, $autoload = null ) {
 		/**
 		 * Fires before Jetpack updates a specific option.
@@ -155,6 +164,14 @@ class Jetpack_Options {
 				return update_option( "jetpack_$name", $value, $autoload );
 			}
 			return update_option( "jetpack_$name", $value );
+=======
+	public static function update_option( $name, $value ) {
+		if ( in_array( $name, self::get_option_names( 'non_compact' ) ) ) {
+			return update_option( "jetpack_$name", $value );
+		} else if ( !in_array( $name, self::get_option_names() ) ) {
+			trigger_error( sprintf( 'Invalid Jetpack option name: %s', $name ), E_USER_WARNING );
+			return false;
+>>>>>>> origin/johndcoy
 		}
 
 		foreach ( array_keys( self::$grouped_options ) as $group ) {
@@ -176,13 +193,23 @@ class Jetpack_Options {
 	public static function update_options( $array ) {
 		$names = array_keys( $array );
 
+<<<<<<< HEAD
 		foreach ( array_diff( $names, self::get_option_names(), self::get_option_names( 'non_compact' ), self::get_option_names( 'private' ) ) as $unknown_name ) {
+=======
+		foreach ( array_diff( $names, self::get_option_names(), self::get_option_names( 'non_compact' ) ) as $unknown_name ) {
+>>>>>>> origin/johndcoy
 			trigger_error( sprintf( 'Invalid Jetpack option name: %s', $unknown_name ), E_USER_WARNING );
 			unset( $array[ $unknown_name ] );
 		}
 
+<<<<<<< HEAD
 		foreach ( $names as $name ) {
 			self::update_option( $name, $array[ $name ] );
+=======
+		foreach ( array_intersect( $names, self::get_option_names( 'non_compact' ) ) as $name ) {
+			update_option( "jetpack_$name", $array[$name] );
+			unset( $array[$name] );
+>>>>>>> origin/johndcoy
 		}
 	}
 
@@ -196,6 +223,7 @@ class Jetpack_Options {
 		$result = true;
 		$names  = (array) $names;
 
+<<<<<<< HEAD
 		if ( ! self::is_valid( $names ) ) {
 			trigger_error( sprintf( 'Invalid Jetpack option names: %s', print_r( $names, 1 ) ), E_USER_WARNING );
 
@@ -206,6 +234,14 @@ class Jetpack_Options {
 			if ( ! delete_option( "jetpack_$name" ) ) {
 				$result = false;
 			}
+=======
+		foreach ( array_diff( $names, self::get_option_names(), self::get_option_names( 'non_compact' ) ) as $unknown_name ) {
+			trigger_error( sprintf( 'Invalid Jetpack option name: %s', $unknown_name ), E_USER_WARNING );
+		}
+
+		foreach ( array_intersect( $names, self::get_option_names( 'non_compact' ) ) as $name ) {
+			delete_option( "jetpack_$name" );
+>>>>>>> origin/johndcoy
 		}
 
 		foreach ( array_keys( self::$grouped_options ) as $group ) {
@@ -223,6 +259,7 @@ class Jetpack_Options {
 			return $options[ $name ];
 		}
 
+<<<<<<< HEAD
 		return $default;
 	}
 
@@ -230,6 +267,9 @@ class Jetpack_Options {
 		$options = get_option( self::$grouped_options[ $group ], array() );
 
 		$to_delete = array_intersect( $names, self::get_option_names( $group ), array_keys( $options ) );
+=======
+		$to_delete = array_intersect( $names, self::get_option_names(), array_keys( $options ) );
+>>>>>>> origin/johndcoy
 		if ( $to_delete ) {
 			foreach ( $to_delete as $name ) {
 				unset( $options[ $name ] );
@@ -242,3 +282,4 @@ class Jetpack_Options {
 	}
 
 }
+
