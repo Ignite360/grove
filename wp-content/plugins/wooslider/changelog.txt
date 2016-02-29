@@ -1,13 +1,134 @@
 *** WooSlider Changelog ***
 
-2012.02.01 - version 1.0.9
+2015.11.11 - version 2.3.0
+ * Tweak - Ensures the necessary JavaScripts load only if slideshows are present on the current screen.
+   /classes/class-wooslider-frontend.php
+ * New - Add option to choose the content type for your slides when selecting a slider type of Posts
+   /classes/class-wooslider-admin.php,
+   /classes/class-wooslider-sliders.php
+ * Update - Updated to use the latest version of FlexSlider, 2.6.0, various under the hood fixes and improvements.
+   assets/js/jquery.flexslider.js
+
+2015.06.23 - version 2.2.2
+ * Tweak - modifies how the image size choice works so that all registered image sizes are shown as an option.
+
+2015.06.12 - version 2.2.1
+ * Update - Updated to use the latest version of FlexSlider, 2.5.0, various under the hood fixes and improvements.
+   assets/js/jquery.flexslider.js
+
+2015.02.27 - version 2.2.0
+ * Update - Updated to use the latest version of FlexSlider, 2.4.0, various fixes and improvements.
+   assets/js/jquery.flexslider.js
+
+2014.07.31 - version 2.1.0
+ * Fix - Fix issue with PHP noticed being shown when adding a slider via the Add Media screen.
+   classes/class-wooslider-sliders.php
+
+ * Fix - Fix 'Undefined Property' PHP notice.
+   classes/class-wooslider-settings-api.php
+
+ * Tweak - Update to FitVids to latest version - 1.1
+   assets/js/jquery.fitvids.js
+
+ * Tweak - Use CSS instead of JavaScript animations.
+   classes/class-wooslider-frontend.php
+
+ * New - Add option to display captions on attachments slider.
+   classes/class-wooslider-admin.php,
+   classes/class-wooslider-sliders.php
+
+ * Tweak - Add tweak to dynamically hide Slide options that cannot be used together.
+   assets/js/shortcode-creator.js,
+   assets/js/shortcode-creator.min.js,
+   classes/class-wooslider-admin.php
+
+ * New - Add option to remove sticky posts from displaying in the Posts slider.
+   classes/class-wooslider-admin.php,
+   classes/class-wooslider-sliders.php
+
+ * New - Add option to select the image size in the Slides slider.
+   classes/class-wooslider-admin.php,
+   classes/class-wooslider-sliders.php
+
+ * New - Add option to select the number of visible images in a carousel slider.
+   classes/class-wooslider-admin.php,
+   classes/class-wooslider-frontend.php
+
+ * Fix - Fix mousewheel issue where the area bellow a slider with different slide heights would still repond to the event.
+   assets/css/style.css
+
+2014.01.28 - version 2.0.2
+ * New - Add 'display_title' parameter to Posts slider
+   /classes/class-wooslider-sliders.php
+
+ * New - Add "has-featured-image" class to slides that have one.
+   /classes/class-wooslider-sliders.php
+
+ * Fix - Fix empty link tags in slides
+   /classes/class-wooslider-sliders.php
+
+ * New - Add falback to slides with no featured image in the image slider, they now default to the content only slide layout
+   /classes/class-wooslider-sliders.php
+
+ * New - Add support for shortcodes to the Slides slider content.
+   /classes/class-wooslider-sliders.php
+
+ * New - Added filters on content output
+   /classes/class-wooslider-sliders.php
+
+ * Fix - Fix issue with initial slider height
+   /classes/class-wooslider-frontend.php
+
+ * Fix - Fix issue with oembed data being modified on all videos, now applied only to videos in 'slide' post type
+   /classes/class-wooslider-frontend.php
+
+ * Fix - Fix issue with videos not being properly discovered by provider APIs on first page load
+   /classes/class-wooslider-sliders.php
+
+2013.12.19 - version 2.0.1
+ * New - Add order settings for Slides post type by date or menu order
+   /classes/class-wooslider-admin.php,
+   /classes/class-wooslider-sliders.php,
+   /classes/class-wooslider-utils.php
+
+ * Fix - Slide URL not saving
+   /classes/class-wooslider-posttypes.php,
+   /classes/class-wooslider-sliders.php
+
+ * Fix - Incorrect callback API variables
+   /classes/class-wooslider-frontend.php
+
+ * Fix - Removed extra quote causing validation issue
+   /classes/class-wooslider-sliders.php
+
+ * Fix - Multiple slide pages not working in a Slides type slider
+   /classes/class-wooslider-sliders.php
+
+ * Fix - IDs with capital letters and spaces causing errors
+   /inc/wooslider-template.php
+
+ * Tweak - Rename 'wooslidercontent' to 'data-wooslidercontent' for HTML5 validation
+   /classes/class-wooslider-frontend.php,
+   /classes/class-wooslider-sliders.php
+
+2013.09.09 - version 2.0.0
+ * /classes/class-wooslider-admin.php - Change thumbnail option from checkbox to select. generate_default_conditional_fields() now uses a filter instead of looking for internal methods.
+ * /classes/class-wooslider-fontend.php - add callbacks, add support for carousel.
+ * /classes/class-wooslider-sliders.php - add render_carousel function, handle carousel option.
+ * /classes/class-wooslider-posttypes.php - Adds logic to handle the "Slide URL" meta box.
+ * /classes/class-wooslider-settings-api.php - Adds support for settings screen tabs, to be used in future versions of WooSlider.
+ * /inc/wooslider-template.php - Add html output for carousel.
+ * /assets/js/jquery.fitvids.js - ADDED.
+
+2013.02.01 - version 1.0.9
  * /inc/woo-functions.php - Added is_woocommerce_active
  * /inc/class-wc-dependencies.php - Added to detect WooCommerce
+
 2012.12.06 - version 1.0.7
  * /assets/js/jquery.flexslider.js - Introduce non-minified version of FlexSlider, for debugging in SCRIPT_DEBUG mode.
  * /assets/js/jquery.flexslider.min.js - Upgrade to the latest version of FlexSlider. RENAMED from "-min" to ".min" in accordance with the WordPress script file naming convention.
  * /assets/js/shortcode-creator.js - Code standards optimisations.
- * /assets/js/jquery.mousewheel.js, 
+ * /assets/js/jquery.mousewheel.js,
  * /assets/js/jquery.mousewheel.min.js - Introduce jQuery Mousewheel script, for use with the "mousewheel" parameter.
  * /assets/css/style.css - Adds basic resets for slides, images within slides and control navigation for better theme compatibility.
  * /classes/class-wooslider-sliders.php - Adds orderby and order arguments for attachment based sliders, default to menu_order to support drag/drop ordering of attachment slides. Pass settings through when retrieving slides. For future use and enhancements.

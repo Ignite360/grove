@@ -19,30 +19,31 @@
 			$link=get_option( 'mini_'.$number.'_link' );
 			$image=get_option( 'mini_'.$number.'_image' );
 			$excerpt=get_option( 'mini_'.$number.'_excerpt' );
+			$target=get_option( 'mini_'.$number.'_target' );
 			
 			if ($title AND $image AND $excerpt) {
 
-				echo '<a href="'.$link.'"><img src="'.$image.'"><strong>'.$title.'</strong><span>'.$excerpt.'</span></a>';
+				echo '<a href="'.$link.'" target="'.$target.'"><img src="'.$image.'"><strong>'.$title.'</strong><span>'.$excerpt.'</span></a>';
 
 			} elseif ($title AND $image AND !$excerpt) {
 
-				echo '<a href="'.$link.'"><img src="'.$image.'"><strong>'.$title.'</strong></a>';
+				echo '<a href="'.$link.'" target="'.$target.'"><img src="'.$image.'"><strong>'.$title.'</strong></a>';
 			
 			} elseif ($title AND !$image AND $excerpt) {
 
-				echo '<a href="'.$link.'"><strong>'.$title.'</strong><span>'.$excerpt.'</span></a>';
+				echo '<a href="'.$link.'" target="'.$target.'"><strong>'.$title.'</strong><span>'.$excerpt.'</span></a>';
 
 			} elseif ($title AND !$image AND !$excerpt) {
 
-				echo '<a href="'.$link.'"><strong>'.$title.'</strong></a>';
+				echo '<a href="'.$link.'" target="'.$target.'"><strong>'.$title.'</strong></a>';
 
 			} elseif (!$title AND $image AND $excerpt) {
 
-				echo '<a href="'.$link.'"><img src="'.$image.'"><span>'.$excerpt.'</span></a>';
+				echo '<a href="'.$link.'" target="'.$target.'"><img src="'.$image.'"><span>'.$excerpt.'</span></a>';
 
 			} elseif (!$title AND $image AND !$excerpt) {
 
-				echo '<a href="'.$link.'"><img src="'.$image.'"></a>';
+				echo '<a href="'.$link.'" target="'.$target.'"><img src="'.$image.'"></a>';
 
 			}
 

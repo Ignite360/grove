@@ -34,28 +34,28 @@
  *
  * @version 1.0
  */
-require_once('class.csstidy_ctype.php');
+require_once( dirname( __FILE__ ) . '/class.csstidy_ctype.php' );
 
 /**
  * Various CSS data needed for correct optimisations etc.
  *
  * @version 1.3
  */
-require('data.inc.php');
+require( dirname( __FILE__ ) . '/data.inc.php' );
 
 /**
  * Contains a class for printing CSS code
  *
  * @version 1.0
  */
-require('class.csstidy_print.php');
+require( dirname( __FILE__ ) . '/class.csstidy_print.php' );
 
 /**
  * Contains a class for optimising CSS code
  *
  * @version 1.0
  */
-require('class.csstidy_optimise.php');
+require( dirname( __FILE__ ) . '/class.csstidy_optimise.php' );
 
 /**
  * CSS Parser class
@@ -77,57 +77,57 @@ class csstidy {
 	 * @var array
 	 * @access public
 	 */
-	var $css = array();
+	public $css = array();
 	/**
 	 * Saves the parsed CSS (raw)
 	 * @var array
 	 * @access private
 	 */
-	var $tokens = array();
+	public $tokens = array();
 	/**
 	 * Printer class
 	 * @see csstidy_print
 	 * @var object
 	 * @access public
 	 */
-	var $print;
+	public $print;
 	/**
 	 * Optimiser class
 	 * @see csstidy_optimise
 	 * @var object
 	 * @access private
 	 */
-	var $optimise;
+	public $optimise;
 	/**
 	 * Saves the CSS charset (@charset)
 	 * @var string
 	 * @access private
 	 */
-	var $charset = '';
+	public $charset = '';
 	/**
 	 * Saves all @import URLs
 	 * @var array
 	 * @access private
 	 */
-	var $import = array();
+	public $import = array();
 	/**
 	 * Saves the namespace
 	 * @var string
 	 * @access private
 	 */
-	var $namespace = '';
+	public $namespace = '';
 	/**
 	 * Contains the version of csstidy
 	 * @var string
 	 * @access private
 	 */
-	var $version = '1.3';
+	public $version = '1.3';
 	/**
 	 * Stores the settings
 	 * @var array
 	 * @access private
 	 */
-	var $settings = array();
+	public $settings = array();
 	/**
 	 * Saves the parser-status.
 	 *
@@ -142,105 +142,105 @@ class csstidy {
 	 * @var string
 	 * @access private
 	 */
-	var $status = 'is';
+	public $status = 'is';
 	/**
 	 * Saves the current at rule (@media)
 	 * @var string
 	 * @access private
 	 */
-	var $at = '';
+	public $at = '';
 	/**
 	 * Saves the current selector
 	 * @var string
 	 * @access private
 	 */
-	var $selector = '';
+	public $selector = '';
 	/**
 	 * Saves the current property
 	 * @var string
 	 * @access private
 	 */
-	var $property = '';
+	public $property = '';
 	/**
 	 * Saves the position of , in selectors
 	 * @var array
 	 * @access private
 	 */
-	var $sel_separate = array();
+	public $sel_separate = array();
 	/**
 	 * Saves the current value
 	 * @var string
 	 * @access private
 	 */
-	var $value = '';
+	public $value = '';
 	/**
 	 * Saves the current sub-value
 	 *
 	 * Example for a subvalue:
 	 * background:url(foo.png) red no-repeat;
 	 * "url(foo.png)", "red", and  "no-repeat" are subvalues,
-	 * seperated by whitespace
+	 * separated by whitespace
 	 * @var string
 	 * @access private
 	 */
-	var $sub_value = '';
+	public $sub_value = '';
 	/**
 	 * Array which saves all subvalues for a property.
 	 * @var array
 	 * @see sub_value
 	 * @access private
 	 */
-	var $sub_value_arr = array();
+	public $sub_value_arr = array();
 	/**
 	 * Saves the stack of characters that opened the current strings
 	 * @var array
 	 * @access private
 	 */
-	var $str_char = array();
-	var $cur_string = array();
+	public $str_char = array();
+	public $cur_string = array();
 	/**
 	 * Status from which the parser switched to ic or instr
 	 * @var array
 	 * @access private
 	 */
-	var $from = array();
+	public $from = array();
 	/**
 	/**
 	 * =true if in invalid at-rule
 	 * @var bool
 	 * @access private
 	 */
-	var $invalid_at = false;
+	public $invalid_at = false;
 	/**
 	 * =true if something has been added to the current selector
 	 * @var bool
 	 * @access private
 	 */
-	var $added = false;
+	public $added = false;
 	/**
 	 * Array which saves the message log
 	 * @var array
 	 * @access private
 	 */
-	var $log = array();
+	public $log = array();
 	/**
 	 * Saves the line number
 	 * @var integer
 	 * @access private
 	 */
-	var $line = 1;
+	public $line = 1;
 	/**
 	 * Marks if we need to leave quotes for a string
 	 * @var array
 	 * @access private
 	 */
-	var $quoted_string = array();
+	public $quoted_string = array();
 
 	/**
 	 * List of tokens
 	 * @var string
 	 */
-	var $tokens_list = "";
+	public $tokens_list = "";
 	/**
 	 * Loads standard template and sets default settings
 	 * @access private

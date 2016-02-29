@@ -27,8 +27,8 @@ class WooSlider_Utils {
 	 */
 	public static function get_slider_types () {
 		return (array)apply_filters( 'wooslider_slider_types', array(
-																	'attachments' => array( 'name' => __( 'Attached Images', 'wooslider' ), 'callback' => 'method' ), 
-																	'slides' => array( 'name' => __( 'Slides', 'wooslider' ), 'callback' => 'method' ), 
+																	'attachments' => array( 'name' => __( 'Attached Images', 'wooslider' ), 'callback' => 'method' ),
+																	'slides' => array( 'name' => __( 'Slides', 'wooslider' ), 'callback' => 'method' ),
 																	'posts' => array( 'name' => __( 'Posts', 'wooslider' ), 'callback' => 'method' )
 																	)
 									);
@@ -41,13 +41,72 @@ class WooSlider_Utils {
 	 */
 	public static function get_posts_layout_types () {
 		return (array)apply_filters( 'wooslider_posts_layout_types', array(
-																	'text-left' => array( 'name' => __( 'Text Left', 'wooslider' ), 'callback' => 'method' ), 
-																	'text-right' => array( 'name' => __( 'Text Right', 'wooslider' ), 'callback' => 'method' ), 
-																	'text-top' => array( 'name' => __( 'Text Top', 'wooslider' ), 'callback' => 'method' ), 
+																	'text-left' => array( 'name' => __( 'Text Left', 'wooslider' ), 'callback' => 'method' ),
+																	'text-right' => array( 'name' => __( 'Text Right', 'wooslider' ), 'callback' => 'method' ),
+																	'text-top' => array( 'name' => __( 'Text Top', 'wooslider' ), 'callback' => 'method' ),
 																	'text-bottom' => array( 'name' => __( 'Text Bottom', 'wooslider' ), 'callback' => 'method' )
 																	)
 									);
 	} // End get_posts_layout_types()
+
+	/**
+	 * Get an array of the supported thumbnail options.
+	 * @since  2.0.0
+	 * @return array The navigation types supported by WooSlider.
+	 */
+	public static function get_thumbnail_options () {
+		return (array)apply_filters( 'wooslider_thumbnail_options', array(
+																	'default' => array( 'name' => __( 'Default', 'wooslider' ) ),
+																	'thumbnails' => array( 'name' => __( 'Thumbnails', 'wooslider' ) ),
+																	'carousel' => array( 'name' => __( 'Carousel', 'wooslider' ) )
+																	)
+									);
+	} // End get_thumbnail_options()
+
+	/**
+	 * Get an array of the supported image size options.
+	 * @since  2.2.2
+	 * @return array The navigation types supported by WooSlider.
+	 */
+	public static function get_image_size_options () {
+		// Image size options
+	   	$image_size_options = array();
+	    $registered_image_sizes = (array)get_intermediate_image_sizes();
+	    if ( ! empty( $registered_image_sizes ) ) {
+	    	foreach ( $registered_image_sizes as $k => $v ) {
+	    		$size_label = $v;
+	    		$image_size_options[$v] = apply_filters( 'wooslider_image_size_label_' . $v, ucwords( str_replace( '_', ' ', str_replace( '-', ' ', $size_label ) ) ) );
+	    	}
+	    }
+	    $image_size_options['full'] = __( 'Full Size', 'wooslider' );
+		return (array)apply_filters( 'wooslider_thumbnail_options', $image_size_options );
+	} // End get_image_size_options()
+
+	/**
+	 * Get an array of the supported order options.
+	 * @since  2.0.1
+	 * @return array The navigation types supported by WooSlider.
+	 */
+	public static function get_order_options () {
+		return (array)apply_filters( 'wooslider_order_options', array(
+																'DESC' => array( 'name' => __( 'Descending', 'wooslider' ) ),
+																'ASC' => array( 'name' => __( 'Ascending', 'wooslider' ) )
+																)
+									);
+	} // End get_order_options()
+
+	/**
+	 * Get an array of the supported order_by options.
+	 * @since  2.0.1
+	 * @return array The navigation types supported by WooSlider.
+	 */
+	public static function get_order_by_options () {
+		return (array)apply_filters( 'wooslider_order_by_options', array(
+																	'date' => array( 'name' => __( 'Date', 'wooslider' ) ),
+																	'menu_order' => array( 'name' => __( 'Menu Order', 'wooslider' ) )
+																	)
+									);
+	} // End get_order_by_options()
 
 	/**
 	 * Return an array of supported slider effects.

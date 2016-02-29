@@ -38,12 +38,16 @@ class WooSlider_Admin {
 	 * @return  void
 	 */
 	public function __construct () {
-		add_action( 'admin_enqueue_scripts', array( &$this, 'admin_styles_global' ) );
-		add_filter( 'media_upload_tabs', array( &$this, 'add_media_tab' ) );
-		add_action( 'media_upload_wooslider', array( &$this, 'media_tab_handle' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_styles_global' ) );
+		add_filter( 'media_upload_tabs', array( $this, 'add_media_tab' ) );
+		add_action( 'media_upload_wooslider', array( $this, 'media_tab_handle' ) );
 
-		add_action( 'admin_print_scripts', array( &$this, 'media_tab_js' ) );
-		add_action( 'wooslider_popup_conditional_fields', array( &$this, 'add_default_conditional_fields' ) );
+		add_action( 'admin_print_scripts', array( $this, 'media_tab_js' ) );
+		add_action( 'wooslider_popup_conditional_fields', array( $this, 'add_default_conditional_fields' ) );
+
+		add_filter( 'wooslider_generate_conditional_fields_posts', array( $this, 'generate_conditional_fields_posts' ) );
+		add_filter( 'wooslider_generate_conditional_fields_slides', array( $this, 'generate_conditional_fields_slides' ) );
+		add_filter( 'wooslider_generate_conditional_fields_attachments', array( $this, 'generate_conditional_fields_attachments' ) );
 	} // End __construct()
 
 	/**
@@ -53,7 +57,12 @@ class WooSlider_Admin {
 	 * @return void
 	 */
 	public function admin_styles_global () {
-		global $wooslider;
+		global $wooslider, $wp_version;
+		// Don't load this CSS file if using WordPress 3.9 or higher.
+		if ( '3.9' <= $wp_version ) {
+			return;
+		}
+
 		wp_register_style( $wooslider->token . '-global', $wooslider->plugin_url . 'assets/css/global.css', '', '1.0.6', 'screen' );
 		wp_enqueue_style( $wooslider->token . '-global' );
 	} // End admin_styles_global()
@@ -74,7 +83,7 @@ class WooSlider_Admin {
 	 * @return void
 	 */
 	public function media_tab_handle () {
-		wp_iframe( array( &$this, 'media_tab_process' ) );
+		wp_iframe( array( $this, 'media_tab_process' ) );
 	} // End media_tab_handle()
 
 	/**
@@ -139,11 +148,23 @@ class WooSlider_Admin {
 		$settings['layout'] = '';
 		$settings['overlay'] = '';
 		$settings['limit'] = '5';
+		$settings['carousel'] = '';
+		$settings['carousel_columns'] = '3';
 		$settings['thumbnails'] = '';
 		$settings['link_title'] = '';
 		$settings['display_excerpt'] = '1';
 		$settings['id'] = '';
 		$settings['sync'] = '';
+		$settings['link_slide'] = '';
+		$settings['display_title'] = '';
+		$settings['display_content'] = '1';
+		$settings['imageslide'] = '';
+		$settings['order'] = '';
+		$settings['order_by'] = '';
+		$settings['show_captions'] = '';
+		$settings['sticky_posts'] = '';
+		$settings['size'] = 'large';
+		$settings['post_type'] = 'post';
 		// $settings['as_nav_for'] = '';
 		$settings = (array)apply_filters( 'wooslider_popup_settings', $settings );
 
@@ -250,7 +271,7 @@ class WooSlider_Admin {
 	public function add_default_conditional_fields ( $types ) {
 		global $pagenow;
 		if ( 'media-upload.php' != $pagenow ) return; // Execute only in the Media Upload popup.
-		
+
 		foreach ( (array)$types as $k => $v ) {
 			if ( method_exists( $this, 'conditional_fields_' . $k ) ) {
 				echo '<div class="conditional conditional-' . esc_attr( $k ) . '">' . "\n";
@@ -317,13 +338,31 @@ class WooSlider_Admin {
 	 */
 	private function conditional_fields_slides () {
 		global $wooslider;
+		$conditional_slide_settings = array('display_title', 'display_content', 'layout', 'overlay');
+		$conditional_slide_features = array(
+			'imageslide' => array('imageslide'),
+			'carousel' => array('carousel', 'carousel_columns')
+		);
 
 		$fields = $this->generate_conditional_fields_slides();
 ?>
 	<table class="form-table">
 		<tbody>
 <?php foreach ( $fields as $k => $v ) { ?>
-			<tr valign="top">
+
+			<?php
+				$class = '';
+				if ( in_array( $k, $conditional_slide_settings ) ) {
+					$class = 'conditional-slide-settings';
+				}
+				foreach ( $conditional_slide_features as $feature_key => $feature_values ) {
+					if ( in_array( $k, $feature_values ) ) {
+						$class = 'conditional-slide-settings--' . $feature_key;
+					}
+				}
+			?>
+
+			<tr valign="top" <?php if ( isset( $class ) && '' != $class ) { echo 'class="' . $class . '"'; } ?>>
 				<th scope="row"><?php echo $v['name']; ?></th>
 				<td>
 					<?php $this->generate_field_by_type( $v['type'], $v['args'] ); ?>
@@ -381,7 +420,7 @@ class WooSlider_Admin {
 				// Multiple checkboxes.
 				case 'multicheck':
 				if ( isset( $args['data']['options'] ) && ( count( (array)$args['data']['options'] ) > 0 ) ) {
-					$html = '<div class="multicheck-container" style="height: 100px; overflow-y: auto;">' . "\n";
+					$html = '<div class="multicheck-container">' . "\n";
 					foreach ( $args['data']['options'] as $k => $v ) {
 						$checked = '';
 						$html .= '<input type="checkbox" name="' . $args['key'] . '[]" class="multicheck multicheck-' . esc_attr( $args['key'] ) . '" value="' . esc_attr( $k ) . '"' . $checked . ' /> ' . $v . '<br />' . "\n";
@@ -420,9 +459,7 @@ class WooSlider_Admin {
 	public function generate_default_conditional_fields ( $types ) {
 		$fields = array();
 		foreach ( (array)$types as $k => $v ) {
-			if ( method_exists( $this, 'generate_conditional_fields_' . $k ) ) {
-				$fields[$k] = (array)$this->{'generate_conditional_fields_' . $k}();
-			}
+			$fields[$k] = (array)apply_filters( 'wooslider_generate_conditional_fields_' . esc_attr( $k ), array(), $k, $v );
 		}
 
 		return $fields;
@@ -433,7 +470,7 @@ class WooSlider_Admin {
 	 * @since  1.0.0
 	 * @return array $fields An array of fields.
 	 */
-	private function generate_conditional_fields_attachments () {
+	public function generate_conditional_fields_attachments () {
 		$fields = array();
 
 		$limit_options = array();
@@ -441,11 +478,26 @@ class WooSlider_Admin {
 			$limit_options[$i] = $i;
 		}
 		$limit_args = array( 'key' => 'limit', 'data' => array( 'options' => $limit_options, 'default' => 5 ) );
-		$thumbnails_args = array( 'key' => 'thumbnails', 'data' => array() );
+
+		$thumbnails = WooSlider_Utils::get_thumbnail_options();
+		$thumbnails_options = array();
+
+	    foreach ( $thumbnails as $k => $v ) {
+	    	$thumbnails_options[$k] = $v['name'];
+	    }
+
+		$thumbnails_args = array( 'key' => 'thumbnails', 'data' => array('options' => $thumbnails_options , 'default' => 'Default' ) );
+
+		$show_captions_args = array( 'key' => 'show_captions', 'data' => array() );
+
+		$image_size_options = WooSlider_Utils::get_image_size_options();
+	    $image_size_args = array( 'key' => 'size', 'data' => array( 'options' => $image_size_options, 'default' => 'large' ) );
 
 		// Create final array.
 		$fields['limit'] = array( 'name' => __( 'Number of Images', 'wooslider' ), 'type' => 'select', 'args' => $limit_args, 'description' => __( 'The maximum number of images to display', 'wooslider' ) );
-		$fields['thumbnails'] = array( 'name' => __( 'Use thumbnails for Pagination', 'wooslider' ), 'type' => 'checkbox', 'args' => $thumbnails_args, 'description' => __( 'Use thumbnails for pagination, instead of "dot" indicators', 'wooslider' ) );
+		$fields['thumbnails'] = array( 'name' => __( 'Use thumbnails for Pagination', 'wooslider' ), 'type' => 'select', 'args' => $thumbnails_args, 'description' => __( 'Use thumbnails for pagination, instead of "dot" indicators', 'wooslider' ) );
+		$fields['show_captions'] = array( 'name' => __( 'Show Image Captions', 'wooslider' ), 'type' => 'checkbox', 'args' => $show_captions_args, 'description' => __( 'This will show image captions as slider text on all slides', 'wooslider' ) );
+		$fields['size'] = array( 'name' => __( 'Image Size', 'wooslider' ), 'type' => 'select', 'args' => $image_size_args, 'description' => __( 'Select the image size for this slider.', 'wooslider' ) );
 
 		return $fields;
 	} // End generate_conditional_fields_attachments()
@@ -455,7 +507,9 @@ class WooSlider_Admin {
 	 * @since  1.0.0
 	 * @return array $fields An array of fields.
 	 */
-	private function generate_conditional_fields_slides () {
+	public function generate_conditional_fields_slides () {
+		global $wooslider;
+		$images_url = $wooslider->plugin_url . '/assets/images/';
 		$fields = array();
 
 		// Categories.
@@ -473,14 +527,88 @@ class WooSlider_Admin {
 		for ( $i = 1; $i <= 20; $i++ ) {
 			$limit_options[$i] = $i;
 		}
+
+		$thumbnails = WooSlider_Utils::get_thumbnail_options();
+
+		$thumbnails_options = array();
+	    foreach ( $thumbnails as $k => $v ) {
+	    	$thumbnails_options[$k] = $v['name'];
+	    }
+
+	    //Adding layout options
+	    $layout_types = WooSlider_Utils::get_posts_layout_types();
+		$layout_options = array();
+
+		foreach ( (array)$layout_types as $k => $v ) {
+			$layout_options[$k] = $v['name'];
+		}
+
+		$layout_images = array(
+								'text-left' => esc_url( $images_url . 'text-left.png' ),
+								'text-right' => esc_url( $images_url . 'text-right.png' ),
+								'text-top' => esc_url( $images_url . 'text-top.png' ),
+								'text-bottom' => esc_url( $images_url . 'text-bottom.png' )
+							);
+		$layouts_args = array( 'key' => 'layout', 'data' => array( 'options' => $layout_options, 'images' => $layout_images ) );
+
+		//Add overlay options
+		$overlay_images = array(
+								'none' => esc_url( $images_url . 'default.png' ),
+								'full' => esc_url( $images_url . 'text-bottom.png' ),
+								'natural' => esc_url( $images_url . 'overlay-natural.png' )
+							);
+
+		$overlay_options = array( 'none' => __( 'None', 'wooslider' ), 'full' => __( 'Full', 'wooslider' ), 'natural' => __( 'Natural', 'wooslider' ) );
+
+		$overlay_args = array( 'key' => 'overlay', 'data' => array( 'options' => $overlay_options, 'images' => $overlay_images ) );
+
+		$order_values = WooSlider_Utils::get_order_options();
+		$order_options = array();
+	    foreach ( $order_values as $k => $v ) {
+	    	$order_options[$k] = $v['name'];
+	    }
+
+	    $order_by_values = WooSlider_Utils::get_order_by_options();
+		$order_by_options = array();
+	    foreach ( $order_by_values as $k => $v ) {
+	    	$order_by_options[$k] = $v['name'];
+	    }
+
+	    $carousel_columns = array();
+		for ( $i = 1; $i <= 5; $i++ ) {
+			$carousel_columns[$i] = $i;
+		}
+
+	    $image_size_options = WooSlider_Utils::get_image_size_options();
+	    $image_size_args = array( 'key' => 'size', 'data' => array( 'options' => $image_size_options, 'default' => 'large' ) );
+
 		$limit_args = array( 'key' => 'limit', 'data' => array( 'options' => $limit_options, 'default' => 5 ) );
-		$thumbnails_args = array( 'key' => 'thumbnails', 'data' => array() );
+		$link_slide_args = array( 'key' => 'link_slide', 'data' => array() );
+		$display_title_args = array( 'key' => 'display_title', 'data' => array() );
+		$display_content_args = array( 'key' => 'display_content', 'data' => array('default' => '1') );
+		$imageslide_args = array( 'key' => 'imageslide', 'data' => array() );
+		$carousel_args = array( 'key' => 'carousel', 'data' => array() );
+		$carousel_columns_args = array( 'key' => 'carousel_columns', 'data' => array( 'options' => $carousel_columns, 'default' => 3 ) );
+		$thumbnails_args = array( 'key' => 'thumbnails', 'data' => array('options' => $thumbnails_options , 'default' => 'Default' ) );
 		$display_featured_image_args = array( 'key' => 'display_featured_image', 'data' => array() );
+		$order_args = array( 'key' => 'order', 'data' => array( 'options' => $order_options, 'default' => 'DESC' ) );
+		$order_by_args = array( 'key' => 'order_by', 'data' => array( 'options' => $order_by_options, 'default' => 'date' ) );
 
 		// Create final array.
 		$fields['limit'] = array( 'name' => __( 'Number of Slides', 'wooslider' ), 'type' => 'select', 'args' => $limit_args, 'description' => __( 'The maximum number of slides to display', 'wooslider' ) );
 		$fields['slide_page'] = array( 'name' => __( 'Slide Groups', 'wooslider' ), 'type' => 'multicheck', 'args' => $categories_args, 'description' => __( 'The slide groups from which to display slides', 'wooslider' ) );
-		$fields['thumbnails'] = array( 'name' => __( 'Use thumbnails for Pagination', 'wooslider' ), 'type' => 'checkbox', 'args' => $thumbnails_args, 'description' => __( 'Use thumbnails for pagination, instead of "dot" indicators (uses featured image)', 'wooslider' ) );
+		$fields['imageslide'] = array( 'name' => __( 'Use featured image as slide (allows for overlays)', 'wooslider' ), 'type' => 'checkbox', 'args' => $imageslide_args, 'description' => __( 'Display featured image as background of slide', 'wooslider' ) );
+		$fields['size'] = array( 'name' => __( 'Image Size', 'wooslider' ), 'type' => 'select', 'args' => $image_size_args, 'description' => __( 'Select the image size for this slider.', 'wooslider' ) );
+		$fields['carousel'] = array( 'name' => __( 'Make this slider a carousel', 'wooslider' ), 'type' => 'checkbox', 'args' => $carousel_args, 'description' => __( 'Display multiple slides at a time with a carousel', 'wooslider' ) );
+		$fields['carousel_columns'] = array( 'name' => __( 'Number of carousel columns', 'wooslider' ), 'type' => 'select', 'args' => $carousel_columns_args, 'description' => __( 'The maximum number of visible images in the carousel', 'wooslider' ) );
+		$fields['thumbnails'] = array( 'name' => __( 'Use thumbnails for Pagination', 'wooslider' ), 'type' => 'select', 'args' => $thumbnails_args, 'description' => __( 'Use thumbnails for pagination, instead of "dot" indicators (uses featured image)', 'wooslider' ) );
+		$fields['link_slide'] = array( 'name' => __( 'Link the slide to it\'s custom url', 'wooslider' ), 'type' => 'checkbox', 'args' => $link_slide_args, 'description' => __( 'Link the slide to it\'s custom URL', 'wooslider' ) );
+		$fields['display_title'] = array( 'name' => __( 'Display the slide title', 'wooslider' ), 'type' => 'checkbox', 'args' => $display_title_args, 'description' => __( 'Display the slide title', 'wooslider' ) );
+		$fields['display_content'] = array( 'name' => __( 'Display the slide\'s content', 'wooslider' ), 'type' => 'checkbox', 'args' => $display_content_args, 'description' => __( 'Display the slide\'s content on each slide', 'wooslider' ) );
+		$fields['layout'] = array( 'name' => __( 'Layout', 'wooslider' ), 'type' => 'images', 'args' => $layouts_args, 'description' => __( 'The layout to use when displaying posts', 'wooslider' ) );
+		$fields['overlay'] = array( 'name' => __( 'Overlay', 'wooslider' ), 'type' => 'images', 'args' => $overlay_args, 'description' => __( 'The type of overlay to use when displaying the post text', 'wooslider' ) );
+		$fields['order_by'] = array( 'name' => __( 'Order By', 'wooslider' ), 'type' => 'select', 'args' => $order_by_args, 'description' => __( 'Parameter by which to order slides', 'wooslider' ) );
+		$fields['order'] = array( 'name' => __( 'Order of Slides', 'wooslider' ), 'type' => 'select', 'args' => $order_args, 'description' => __( 'Display in increasing or decreasing order', 'wooslider' ) );
 
 		return $fields;
 	} // End generate_conditional_fields_slides()
@@ -490,7 +618,7 @@ class WooSlider_Admin {
 	 * @since  1.0.0
 	 * @return array $fields An array of fields.
 	 */
-	private function generate_conditional_fields_posts () {
+	public function generate_conditional_fields_posts () {
 		global $wooslider;
 
 		$images_url = $wooslider->plugin_url . '/assets/images/';
@@ -518,6 +646,15 @@ class WooSlider_Admin {
 
 		$tags_args = array( 'key' => 'tag', 'data' => array( 'options' => $terms_options ) );
 
+		$thumbnails = WooSlider_Utils::get_thumbnail_options();
+		$thumbnails_options = array();
+
+	    foreach ( $thumbnails as $k => $v ) {
+	    	$thumbnails_options[$k] = $v['name'];
+	    }
+
+		$thumbnails_args = array( 'key' => 'thumbnails', 'data' => array('options' => $thumbnails_options , 'default' => 'Default' ) );
+
 		$layout_types = WooSlider_Utils::get_posts_layout_types();
 		$layout_options = array();
 
@@ -526,16 +663,16 @@ class WooSlider_Admin {
 		}
 
 		$layout_images = array(
-								'text-left' => esc_url( $images_url . 'text-left.png' ), 
-								'text-right' => esc_url( $images_url . 'text-right.png' ), 
-								'text-top' => esc_url( $images_url . 'text-top.png' ), 
+								'text-left' => esc_url( $images_url . 'text-left.png' ),
+								'text-right' => esc_url( $images_url . 'text-right.png' ),
+								'text-top' => esc_url( $images_url . 'text-top.png' ),
 								'text-bottom' => esc_url( $images_url . 'text-bottom.png' )
 							);
 		$layouts_args = array( 'key' => 'layout', 'data' => array( 'options' => $layout_options, 'images' => $layout_images ) );
 
 		$overlay_images = array(
-								'none' => esc_url( $images_url . 'default.png' ), 
-								'full' => esc_url( $images_url . 'text-bottom.png' ), 
+								'none' => esc_url( $images_url . 'default.png' ),
+								'full' => esc_url( $images_url . 'text-bottom.png' ),
 								'natural' => esc_url( $images_url . 'overlay-natural.png' )
 							);
 
@@ -548,13 +685,35 @@ class WooSlider_Admin {
 			$limit_options[$i] = $i;
 		}
 		$limit_args = array( 'key' => 'limit', 'data' => array( 'options' => $limit_options, 'default' => 5 ) );
-		$thumbnails_args = array( 'key' => 'thumbnails', 'data' => array() );
+		//$thumbnails_args = array( 'key' => 'thumbnails', 'data' => array() );
+		$sticky_posts_args = array( 'key' => 'sticky_posts', 'data' => array() );
 		$link_title_args = array( 'key' => 'link_title', 'data' => array() );
 		$display_excerpt_args = array( 'key' => 'display_excerpt', 'data' => array('default' => '1') );
 
+		$image_size_options = WooSlider_Utils::get_image_size_options();
+	    $image_size_args = array( 'key' => 'size', 'data' => array( 'options' => $image_size_options, 'default' => 'large' ) );
+
+		$post_types = get_post_types( array( 'public' => true ), 'objects' );
+
+		$post_types_parsed = array();
+		if ( 0 < count( $post_types ) ) {
+			foreach ( $post_types as $k => $v ) {
+				if ( in_array( $k, array( 'revision', 'slide', 'attachment' ) ) ) {
+					unset( $post_types[$k] );
+				} else {
+					$post_types_parsed[$k] = $v->labels->name;
+				}
+			}
+		}
+
+	    $post_type_args = array( 'key' => 'post_type', 'data' => array( 'options' => $post_types_parsed, 'default' => 'post' ) );
+
 		// Create final array.
+		$fields['post_type'] = array( 'name' => __( 'Content Type', 'wooslider' ), 'type' => 'select', 'args' => $post_type_args, 'description' => __( 'The content type to display', 'wooslider' ) );
 		$fields['limit'] = array( 'name' => __( 'Number of Posts', 'wooslider' ), 'type' => 'select', 'args' => $limit_args, 'description' => __( 'The maximum number of posts to display', 'wooslider' ) );
-		$fields['thumbnails'] = array( 'name' => __( 'Use thumbnails for Pagination', 'wooslider' ), 'type' => 'checkbox', 'args' => $thumbnails_args, 'description' => __( 'Use thumbnails for pagination, instead of "dot" indicators (uses featured image)', 'wooslider' ) );
+		$fields['size'] = array( 'name' => __( 'Image Size', 'wooslider' ), 'type' => 'select', 'args' => $image_size_args, 'description' => __( 'Select the image size for this slider.', 'wooslider' ) );
+		$fields['sticky_posts'] = array( 'name' => __( 'Allow for Sticky Posts', 'wooslider' ), 'type' => 'checkbox', 'args' => $sticky_posts_args, 'description' => __( 'Display sticky posts in the slider', 'wooslider' ) );
+		$fields['thumbnails'] = array( 'name' => __( 'Use thumbnails for Pagination', 'wooslider' ), 'type' => 'select', 'args' => $thumbnails_args, 'description' => __( 'Use thumbnails for pagination, instead of "dot" indicators (uses featured image)', 'wooslider' ) );
 		$fields['link_title'] = array( 'name' => __( 'Link the post title to it\'s post', 'wooslider' ), 'type' => 'checkbox', 'args' => $link_title_args, 'description' => __( 'Link the post title to it\'s single post screen', 'wooslider' ) );
 		$fields['display_excerpt'] = array( 'name' => __( 'Display the post\'s excerpt', 'wooslider' ), 'type' => 'checkbox', 'args' => $display_excerpt_args, 'description' => __( 'Display the post\'s excerpt on each slide', 'wooslider' ) );
 		$fields['layout'] = array( 'name' => __( 'Layout', 'wooslider' ), 'type' => 'images', 'args' => $layouts_args, 'description' => __( 'The layout to use when displaying posts', 'wooslider' ) );

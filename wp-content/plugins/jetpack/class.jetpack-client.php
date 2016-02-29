@@ -1,6 +1,9 @@
 <?php
 
 class Jetpack_Client {
+	const WPCOM_JSON_API_HOST    = 'public-api.wordpress.com';
+	const WPCOM_JSON_API_VERSION = '1.1';
+
 	/**
 	 * Makes an authorized remote request using Jetpack_Signature
 	 *
@@ -45,13 +48,18 @@ class Jetpack_Client {
 
 		$token_key = sprintf( '%s:%d:%d', $token_key, JETPACK__API_VERSION, $token->external_user_id );
 
-		require_once dirname( __FILE__ ) . '/class.jetpack-signature.php';
+		require_once JETPACK__PLUGIN_DIR . 'class.jetpack-signature.php';
 
-		$time_diff = (int) Jetpack::get_option( 'time_diff' );
+		$time_diff = (int) Jetpack_Options::get_option( 'time_diff' );
 		$jetpack_signature = new Jetpack_Signature( $token->secret, $time_diff );
 
 		$timestamp = time() + $time_diff;
-		$nonce = wp_generate_password( 10, false );
+
+		if( function_exists( 'wp_generate_password' ) ) {
+			$nonce = wp_generate_password( 10, false );
+		} else {
+			$nonce = substr( sha1( rand( 0, 1000000 ) ), 0, 10);
+		}
 
 		// Kind of annoying.  Maybe refactor Jetpack_Signature to handle body-hashing
 		if ( is_null( $body ) ) {
@@ -72,8 +80,8 @@ class Jetpack_Client {
 
 		if ( false !== strpos( $args['url'], 'xmlrpc.php' ) ) {
 			$url_args = array(
-				'for'     => 'jetpack',
-				'blog_id' => $args['blog_id'],
+				'for'           => 'jetpack',
+				'wpcom_blog_id' => Jetpack_Options::get_option( 'id' ),
 			);
 		} else {
 			$url_args = array();
@@ -84,7 +92,7 @@ class Jetpack_Client {
 		}
 
 		$url = add_query_arg( urlencode_deep( $url_args ), $args['url'] );
-		$url = Jetpack::fix_url_for_bad_hosts( $url, $request );
+		$url = Jetpack::fix_url_for_bad_hosts( $url );
 
 		$signature = $jetpack_signature->sign_request( $token_key, $timestamp, $nonce, $body_hash, $method, $url, $body, false );
 
@@ -121,15 +129,29 @@ class Jetpack_Client {
 	 * The option is checked on each request.
 	 *
 	 * @internal
-	 * @todo: Better fallbacks (bundled certs?), feedback, UI, ....
 	 * @see Jetpack::fix_url_for_bad_hosts()
 	 *
 	 * @return array|WP_Error WP HTTP response on success
 	 */
 	public static function _wp_remote_request( $url, $args, $set_fallback = false ) {
-		$fallback = Jetpack::get_option( 'fallback_no_verify_ssl_certs' );
+		/**
+		 * SSL verification (`sslverify`) for the JetpackClient remote request
+		 * defaults to off, use this filter to force it on.
+		 *
+		 * Return `true` to ENABLE SSL verification, return `false`
+		 * to DISABLE SSL verification.
+		 *
+		 * @since 3.6.0
+		 *
+		 * @param bool Whether to force `sslverify` or not.
+		 */
+		if ( apply_filters( 'jetpack_client_verify_ssl_certs', false ) ) {
+			return wp_remote_request( $url, $args );
+		}
+
+		$fallback = Jetpack_Options::get_option( 'fallback_no_verify_ssl_certs' );
 		if ( false === $fallback ) {
-			Jetpack::update_option( 'fallback_no_verify_ssl_certs', 0 );
+			Jetpack_Options::update_option( 'fallback_no_verify_ssl_certs', 0 );
 		}
 
 		if ( (int) $fallback ) {
@@ -178,7 +200,7 @@ class Jetpack_Client {
 
 		if ( !is_wp_error( $response ) ) {
 			// The request went through this time, flag for future fallbacks
-			Jetpack::update_option( 'fallback_no_verify_ssl_certs', time() );
+			Jetpack_Options::update_option( 'fallback_no_verify_ssl_certs', time() );
 			Jetpack_Client::set_time_diff( $response, $set_fallback );
 		}
 
@@ -204,12 +226,57 @@ class Jetpack_Client {
 		$time_diff = $time - time();
 
 		if ( $force_set ) { // during register
-			Jetpack::update_option( 'time_diff', $time_diff );
+			Jetpack_Options::update_option( 'time_diff', $time_diff );
 		} else { // otherwise
-			$old_diff = Jetpack::get_option( 'time_diff' );
+			$old_diff = Jetpack_Options::get_option( 'time_diff' );
 			if ( false === $old_diff || abs( $time_diff - (int) $old_diff ) > 10 ) {
-				Jetpack::update_option( 'time_diff', $time_diff );
+				Jetpack_Options::update_option( 'time_diff', $time_diff );
 			}
 		}
 	}
+
+	/**
+	 * Query the WordPress.com REST API using the blog token
+	 *
+	 * @param string  $path
+	 * @param string  $version
+	 * @param array   $args
+	 * @param string  $body
+	 * @return array|WP_Error $response Data.
+	 */
+	static function wpcom_json_api_request_as_blog( $path, $version = self::WPCOM_JSON_API_VERSION, $args = array(), $body = null ) {
+		$filtered_args = array_intersect_key( $args, array(
+			'method'      => 'string',
+			'timeout'     => 'int',
+			'redirection' => 'int',
+		) );
+
+		/**
+		 * Determines whether Jetpack can send outbound https requests to the WPCOM api.
+		 *
+		 * @since 3.6.0
+		 *
+		 * @param bool $proto Defaults to true.
+		 */
+		$proto = apply_filters( 'jetpack_can_make_outbound_https', true ) ? 'https' : 'http';
+
+		// unprecedingslashit
+		$_path = preg_replace( '/^\//', '', $path );
+
+		// Use GET by default whereas `remote_request` uses POST
+		if ( isset( $filtered_args['method'] ) && strtoupper( $filtered_args['method'] === 'POST' ) ) {
+			$request_method = 'POST';
+		} else {
+			$request_method = 'GET';
+		}
+
+		$validated_args = array_merge( $filtered_args, array(
+			'url'     => sprintf( '%s://%s/rest/v%s/%s', $proto, self::WPCOM_JSON_API_HOST, $version, $_path ),
+			'blog_id' => (int) Jetpack_Options::get_option( 'id' ),
+			'method'  => $request_method,
+		) );
+
+		return Jetpack_Client::remote_request( $validated_args, $body );
+	}
+
 }

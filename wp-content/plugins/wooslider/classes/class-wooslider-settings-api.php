@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * var $fields
  * var $errors
  * var $settings_version
- * 
+ *
  * public $has_range
  * public $has_imageselector
  *
@@ -79,10 +79,11 @@ class WooSlider_Settings_API {
 	public $has_tabs;
 	private $tabs;
 	public $settings_version;
-	
+	public $priority;
+
 	/**
 	 * __construct function.
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -100,18 +101,20 @@ class WooSlider_Settings_API {
 		$this->has_tabs = false;
 		$this->tabs = array();
 		$this->settings_version = '';
+		$this->priority = 99;
 	} // End __construct()
-	
+
 	/**
 	 * setup_settings function.
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
 	public function setup_settings () {
-		add_action( 'admin_menu', array( &$this, 'register_settings_screen' ) );
-		add_action( 'admin_init', array( &$this, 'settings_fields' ) );
-		
+		add_action( 'admin_menu', array( $this, 'register_settings_screen' ), intval( $this->priority ) );
+		add_action( 'admin_init', array( $this, 'settings_fields' ) );
+		add_action( 'wooslider_settings_tabs_general', array( $this, 'default_settings_screen_markup' ) );
+
 		$this->init_sections();
 		$this->init_fields();
 		$this->get_settings();
@@ -119,10 +122,10 @@ class WooSlider_Settings_API {
 			$this->create_tabs();
 		}
 	} // End setup_settings()
-	
+
 	/**
 	 * init_sections function.
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -130,10 +133,10 @@ class WooSlider_Settings_API {
 		// Override this function in your class and assign the array of sections to $this->sections.
 		_e( 'Override init_sections() in your class.', 'wooslider' );
 	} // End init_sections()
-	
+
 	/**
 	 * init_fields function.
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -144,9 +147,9 @@ class WooSlider_Settings_API {
 
 	/**
 	 * settings_tabs function.
-	 * 
+	 *
 	 * @access public
-	 * @since  1.1.0
+	 * @since  2.0.0
 	 * @return void
 	 */
 	public function settings_tabs () {
@@ -154,17 +157,17 @@ class WooSlider_Settings_API {
 
 		if ( count( $this->tabs ) > 0 ) {
 			$html = '';
-			
+
 			$html .= '<ul id="settings-sections" class="subsubsub hide-if-no-js">' . "\n";
 
 			$sections = array(
 						'all' => array( 'href' => '#all', 'name' => __( 'All', 'wooslider' ), 'class' => 'current all tab' )
 					);
-					
+
 			foreach ( $this->tabs as $k => $v ) {
 				$sections[$k] = array( 'href' => '#' . esc_attr( $k ), 'name' => esc_attr( $v['name'] ), 'class' => 'tab' );
 			}
-			
+
 			$count = 1;
 			foreach ( $sections as $k => $v ) {
 				$count++;
@@ -183,9 +186,9 @@ class WooSlider_Settings_API {
 
 	/**
 	 * create_tabs function.
-	 * 
+	 *
 	 * @access private
-	 * @since  1.1.0
+	 * @since  2.0.0
 	 * @return void
 	 */
 	private function create_tabs () {
@@ -201,28 +204,28 @@ class WooSlider_Settings_API {
 
 	/**
 	 * create_sections function.
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
 	public function create_sections () {
 		if ( count( $this->sections ) > 0 ) {
 			foreach ( $this->sections as $k => $v ) {
-				add_settings_section( $k, $v['name'], array( &$this, 'section_description' ), $this->token );
+				add_settings_section( $k, $v['name'], array( $this, 'section_description' ), $this->token );
 			}
 		}
 	} // End create_sections()
-	
+
 	/**
 	 * create_fields function.
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
 	public function create_fields () {
 		if ( count( $this->sections ) > 0 ) {
 			// $this->parse_fields( $this->fields );
-			
+
 			foreach ( $this->fields as $k => $v ) {
 				$method = $this->determine_method( $v, 'form' );
 				$name = $v['name'];
@@ -234,60 +237,60 @@ class WooSlider_Settings_API {
 			}
 		}
 	} // End create_fields()
-	
+
 	/**
 	 * determine_method function.
-	 * 
+	 *
 	 * @access protected
 	 * @param array $data
 	 * @return array or string
 	 */
 	protected function determine_method ( $data, $type = 'form' ) {
 		$method = '';
-		
+
 		if ( ! in_array( $type, array( 'form', 'validate', 'check' ) ) ) { return; }
-		
+
 		// Check for custom functions.
 		if ( isset( $data[$type] ) ) {
 			if ( function_exists( $data[$type] ) ) {
 				$method = $data[$type];
 			}
-			
+
 			if ( $method == '' && method_exists( $this, $data[$type] ) ) {
 				if ( $type == 'form' ) {
-					$method = array( &$this, $data[$type] );
+					$method = array( $this, $data[$type] );
 				} else {
 					$method = $data[$type];
 				}
 			}
 		}
-		
+
 		if ( $method == '' && method_exists ( $this, $type . '_field_' . $data['type'] ) ) {
 			if ( $type == 'form' ) {
-				$method = array( &$this, $type . '_field_' . $data['type'] );
+				$method = array( $this, $type . '_field_' . $data['type'] );
 			} else {
 				$method = $type . '_field_' . $data['type'];
 			}
 		}
-		
+
 		if ( $method == '' && function_exists ( $this->token . '_' . $type . '_field_' . $data['type'] ) ) {
 			$method = $this->token . '_' . $type . '_field_' . $data['type'];
 		}
-		
+
 		if ( $method == '' ) {
 			if ( $type == 'form' ) {
-				$method = array( &$this, $type . '_field_text' );
+				$method = array( $this, $type . '_field_text' );
 			} else {
 				$method = $type . '_field_text';
 			}
 		}
-		
+
 		return $method;
 	} // End determine_method()
-	
+
 	/**
 	 * parse_fields function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param array $fields
@@ -299,17 +302,17 @@ class WooSlider_Settings_API {
 				if ( ! isset( $this->sections[$v['section']]['fields'] ) ) {
 					$this->sections[$v['section']]['fields'] = array();
 				}
-				
+
 				$this->sections[$v['section']]['fields'][$k] = $v;
 			} else {
 				$this->remaining_fields[$k] = $v;
 			}
 		}
 	} // End parse_fields()
-	
+
 	/**
 	 * register_settings_screen function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @return void
@@ -317,44 +320,143 @@ class WooSlider_Settings_API {
 	public function register_settings_screen () {
 		global $wooslider;
 
-		$hook = add_submenu_page( 'edit.php?post_type=slide', $this->name, $this->menu_label, 'manage_options', $this->page_slug, array( &$this, 'settings_screen' ) );
-		
+		$hook = add_submenu_page( 'edit.php?post_type=slide', $this->name, $this->menu_label, 'manage_options', $this->page_slug, array( $this, 'settings_screen' ) );
+
 		$this->hook = $hook;
 
 		if ( isset( $_GET['page'] ) && ( $_GET['page'] == $this->page_slug ) ) {
-			add_action( 'admin_notices', array( &$this, 'settings_errors' ) );
-			add_action( 'admin_print_scripts', array( &$this, 'enqueue_scripts' ) );
-			add_action( 'admin_print_styles', array( &$this, 'enqueue_styles' ) );
+			add_action( 'admin_notices', array( $this, 'settings_errors' ) );
+			add_action( 'admin_print_scripts', array( $this, 'enqueue_scripts' ) );
+			add_action( 'admin_print_styles', array( $this, 'enqueue_styles' ) );
 		}
 	} // End register_settings_screen()
-	
+
 	/**
 	 * settings_screen function.
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
 	public function settings_screen () {
+		$this->settings_screen_header();
+		$current_tab = $this->_get_current_tab();
+?>
+	<form action="options.php" method="post">
+		<?php do_action( 'wooslider_settings_tabs_' . $current_tab ); ?>
+	</form>
+<?php
+		$this->settings_screen_footer();
+	} // End settings_screen()
+
+	/**
+	 * Display the default settings screen logic.
+	 * @access  public
+	 * @since   2.0.0
+	 * @return  void
+	 */
+	public function default_settings_screen_markup () {
+		$this->settings_tabs();
+		settings_fields( $this->token );
+		do_settings_sections( $this->token );
+		submit_button();
+	} // End default_settings_screen_markup()
+
+	/**
+	 * The header markup for the settings screens.
+	 * @access  protected
+	 * @since   2.0.0
+	 * @return  void
+	 */
+	protected function settings_screen_header () {
 		global $wooslider;
+		$tabs = $this->_get_settings_tabs();
+		$current_tab = $this->_get_current_tab();
 ?>
 <div id="wooslider" class="wrap <?php echo esc_attr( $this->token ); ?>">
 	<?php screen_icon( 'wooslider' ); ?>
-	<h2><?php echo esc_html( $this->name ); ?><?php if ( '' != $this->settings_version ) { echo ' <span class="version">' . $this->settings_version . '</span>'; } ?></h2>
-	<p class="powered-by-woo"><?php _e( 'Powered by', 'wooslider' ); ?><a href="http://www.woothemes.com/" title="WooThemes"><img src="<?php echo $wooslider->plugin_url; ?>assets/images/woothemes.png" alt="WooThemes" /></a></p>
-	
-	<form action="options.php" method="post">
-		<?php $this->settings_tabs(); ?>
-		<?php settings_fields( $this->token ); ?>
-		<?php do_settings_sections( $this->token ); ?>
-		<?php submit_button(); ?>
-	</form>
-</div><!--/#wooslider-->
+	<h2 class="nav-tab-wrapper">
+	<?php
+	echo $this->get_settings_tabs_html( $tabs, $current_tab );
+	do_action( 'wooslider_settings_tabs' );
+	?>
+	<?php if ( '' != $this->settings_version ) { echo ' <span class="version">' . $this->settings_version . '</span>'; } ?>
+	<span class="powered-by-woo"><?php _e( 'Powered by', 'wooslider' ); ?><a href="http://www.woothemes.com/" title="WooThemes"><img src="<?php echo $wooslider->plugin_url; ?>assets/images/woothemes.png" alt="WooThemes" /></a></span>
+	</h2>
 <?php
-	} // End settings_screen()
-	
+		do_action( 'wooslider_settings_screen_header' );
+	} // End settings_screen_header()
+
+	/**
+	 * The footer markup for the settings screens.
+	 * @access  protected
+	 * @since   2.0.0
+	 * @return  void
+	 */
+	protected function settings_screen_footer () {
+?>
+	</div><!--/#wooslider-->
+<?php
+	} // End settings_screen_footer()
+
+	/**
+	 * Generate an array of admin section tabs.
+	 * @access  private
+	 * @since   1.0.0
+	 * @return  array Tab data with key, and a value of array( 'name', 'callback' )
+	 */
+	private function _get_settings_tabs () {
+		$tabs = array(
+				'general' => __( 'General', 'wooslider' )
+				);
+		return (array)apply_filters( 'wooslider_get_settings_tabs', $tabs );
+	} // End _get_settings_tabs()
+
+	/**
+	 * Generate HTML markup for the section tabs.
+	 * @access  public
+	 * @since   1.0.0
+	 * @param   array $tabs An array of tabs.
+	 * @param   string $current_tab The key of the current tab.
+	 * @return  string HTML markup for the settings tabs.
+	 */
+	public function get_settings_tabs_html ( $tabs = false, $current_tab = false ) {
+		if ( ! is_array( $tabs ) ) $tabs = $this->_get_settings_tabs(); // Fail-safe, in case we don't pass tab data.
+		if ( false == $current_tab ) $current_tab = $this->_get_current_tab();
+
+		$html = '';
+		if ( 0 < count( $tabs ) ) {
+			foreach ( $tabs as $k => $v ) {
+				$class = 'nav-tab';
+				if ( $current_tab == $k ) {
+					$class .= ' nav-tab-active';
+				}
+				$url = add_query_arg( 'tab', $k, add_query_arg( 'page', $this->token, admin_url( 'options-general.php' ) ) );
+				$html .= '<a href="' . esc_url( $url ) . '" class="' . esc_attr( $class ) . '">' . esc_html( $v ) . '</a>';
+			}
+		}
+		return $html;
+	} // End get_settings_tabs_html()
+
+	/**
+	 * Get the current selected tab key.
+	 * @access  private
+	 * @since   1.0.0
+	 * @param   array $tabs Available tabs.
+	 * @return  string Current tab's key, or a default value.
+	 */
+	private function _get_current_tab ( $tabs = false ) {
+		if ( ! is_array( $tabs ) ) $tabs = $this->_get_settings_tabs(); // Fail-safe, in case we don't pass tab data.
+		if ( isset( $_GET['tab'] ) && in_array( $_GET['tab'], array_keys( $tabs ) ) )
+			$current_tab = esc_attr( $_GET['tab'] );
+		else
+			$current_tab = 'general';
+
+		return $current_tab;
+	} // End _get_current_tab()
+
 	/**
 	 * get_settings function.
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -362,7 +464,7 @@ class WooSlider_Settings_API {
 		if ( ! is_array( $this->settings ) ) {
 			$this->settings = get_option( $this->token, array() );
 		}
-		
+
 		foreach ( $this->fields as $k => $v ) {
 			if ( ! isset( $this->settings[$k] ) && isset( $v['default'] ) ) {
 				$this->settings[$k] = $v['default'];
@@ -371,25 +473,25 @@ class WooSlider_Settings_API {
 				$this->settings[$k] = 0;
 			}
 		}
-		
+
 		return $this->settings;
 	} // End get_settings()
-	
+
 	/**
 	 * settings_fields function.
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
 	public function settings_fields () {
-		register_setting( $this->token, $this->token, array( &$this, 'validate_fields' ) );
+		register_setting( $this->token, $this->token, array( $this, 'validate_fields' ) );
 		$this->create_sections();
 		$this->create_fields();
 	} // End settings_fields()
-	
+
 	/**
 	 * settings_errors function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @return void
@@ -397,10 +499,10 @@ class WooSlider_Settings_API {
 	public function settings_errors () {
 		echo settings_errors( $this->token . '-errors' );
 	} // End settings_errors()
-	
+
 	/**
 	 * section_description function.
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -409,10 +511,10 @@ class WooSlider_Settings_API {
 			echo wpautop( esc_html( $this->sections[$section['id']]['description'] ) );
 		}
 	} // End section_description_main()
-	
+
 	/**
 	 * form_field_text function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param array $args
@@ -426,10 +528,10 @@ class WooSlider_Settings_API {
 			echo '<span class="description">' . esc_html( $args['data']['description'] ) . '</span>' . "\n";
 		}
 	} // End form_field_text()
-	
+
 	/**
 	 * form_field_checkbox function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param array $args
@@ -448,10 +550,10 @@ class WooSlider_Settings_API {
 			echo esc_html( $args['data']['description'] ) . '</label>' . "\n";
 		}
 	} // End form_field_text()
-	
+
 	/**
 	 * form_field_textarea function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param array $args
@@ -465,10 +567,10 @@ class WooSlider_Settings_API {
 			echo '<p><span class="description">' . esc_html( $args['data']['description'] ) . '</span></p>' . "\n";
 		}
 	} // End form_field_textarea()
-	
+
 	/**
 	 * form_field_select function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param array $args
@@ -476,7 +578,7 @@ class WooSlider_Settings_API {
 	 */
 	public function form_field_select ( $args ) {
 		$options = $this->get_settings();
-		
+
 		if ( isset( $args['data']['options'] ) && ( count( (array)$args['data']['options'] ) > 0 ) ) {
 			$html = '';
 			$html .= '<select id="' . esc_attr( $args['key'] ) . '" name="' . esc_attr( $this->token ) . '[' . esc_attr( $args['key'] ) . ']">' . "\n";
@@ -485,16 +587,16 @@ class WooSlider_Settings_API {
 				}
 			$html .= '</select>' . "\n";
 			echo $html;
-			
+
 			if ( isset( $args['data']['description'] ) ) {
 				echo '<p><span class="description">' . esc_html( $args['data']['description'] ) . '</span></p>' . "\n";
 			}
 		}
 	} // End form_field_select()
-	
+
 	/**
 	 * form_field_radio function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param array $args
@@ -502,23 +604,23 @@ class WooSlider_Settings_API {
 	 */
 	public function form_field_radio ( $args ) {
 		$options = $this->get_settings();
-		
+
 		if ( isset( $args['data']['options'] ) && ( count( (array)$args['data']['options'] ) > 0 ) ) {
 			$html = '';
 			foreach ( $args['data']['options'] as $k => $v ) {
 				$html .= '<input type="radio" name="' . $this->token . '[' . esc_attr( $args['key'] ) . ']" value="' . esc_attr( $k ) . '"' . checked( esc_attr( $options[$args['key']] ), $k, false ) . ' /> ' . $v . '<br />' . "\n";
 			}
 			echo $html;
-			
+
 			if ( isset( $args['data']['description'] ) ) {
 				echo '<span class="description">' . esc_html( $args['data']['description'] ) . '</span>' . "\n";
 			}
 		}
 	} // End form_field_radio()
-	
+
 	/**
 	 * form_field_multicheck function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param array $args
@@ -526,7 +628,7 @@ class WooSlider_Settings_API {
 	 */
 	public function form_field_multicheck ( $args ) {
 		$options = $this->get_settings();
-		
+
 		if ( isset( $args['data']['options'] ) && ( count( (array)$args['data']['options'] ) > 0 ) ) {
 			$html = '<div class="multicheck-container" style="height: 100px; overflow-y: auto;">' . "\n";
 			foreach ( $args['data']['options'] as $k => $v ) {
@@ -537,7 +639,7 @@ class WooSlider_Settings_API {
 			}
 			$html .= '</div>' . "\n";
 			echo $html;
-			
+
 			if ( isset( $args['data']['description'] ) ) {
 				echo '<span class="description">' . esc_html( $args['data']['description'] ) . '</span>' . "\n";
 			}
@@ -546,7 +648,7 @@ class WooSlider_Settings_API {
 
 	/**
 	 * form_field_range function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param array $args
@@ -554,7 +656,7 @@ class WooSlider_Settings_API {
 	 */
 	public function form_field_range ( $args ) {
 		$options = $this->get_settings();
-		
+
 		if ( isset( $args['data']['options'] ) && ( count( (array)$args['data']['options'] ) > 0 ) ) {
 			$html = '';
 			$html .= '<select id="' . esc_attr( $args['key'] ) . '" name="' . esc_attr( $this->token ) . '[' . esc_attr( $args['key'] ) . ']" class="range-input">' . "\n";
@@ -563,7 +665,7 @@ class WooSlider_Settings_API {
 				}
 			$html .= '</select>' . "\n";
 			echo $html;
-			
+
 			if ( isset( $args['data']['description'] ) ) {
 				echo '<p><span class="description">' . esc_html( $args['data']['description'] ) . '</span></p>' . "\n";
 			}
@@ -572,7 +674,7 @@ class WooSlider_Settings_API {
 
 	/**
 	 * form_field_images function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param array $args
@@ -580,14 +682,14 @@ class WooSlider_Settings_API {
 	 */
 	public function form_field_images ( $args ) {
 		$options = $this->get_settings();
-		
+
 		if ( isset( $args['data']['options'] ) && ( count( (array)$args['data']['options'] ) > 0 ) ) {
 			$html = '';
 			foreach ( $args['data']['options'] as $k => $v ) {
 				$html .= '<input type="radio" name="' . esc_attr( $this->token ) . '[' . esc_attr( $args['key'] ) . ']" value="' . esc_attr( $k ) . '"' . checked( esc_attr( $options[$args['key']] ), $k, false ) . ' /> ' . $v . '<br />' . "\n";
 			}
 			echo $html;
-			
+
 			if ( isset( $args['data']['description'] ) ) {
 				echo '<span class="description">' . esc_html( $args['data']['description'] ) . '</span>' . "\n";
 			}
@@ -596,7 +698,7 @@ class WooSlider_Settings_API {
 
 	/**
 	 * form_field_info function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param array $args
@@ -621,7 +723,7 @@ class WooSlider_Settings_API {
 
 	/**
 	 * validate_fields function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param array $input
@@ -630,11 +732,11 @@ class WooSlider_Settings_API {
 	 */
 	public function validate_fields ( $input ) {
 		$options = $this->get_settings();
-		
+
 		foreach ( $this->fields as $k => $v ) {
 			// Make sure checkboxes are present even when false.
 			if ( $v['type'] == 'checkbox' && ! isset( $input[$k] ) ) { $input[$k] = false; }
-			
+
 			if ( isset( $input[$k] ) ) {
 				// Perform checks on required fields.
 				if ( isset( $v['required'] ) && ( $v['required'] == true ) ) {
@@ -678,15 +780,15 @@ class WooSlider_Settings_API {
 				}
 			}
 		}
-		
+
 		// Parse error messages into the Settings API.
 		$this->parse_errors();
 		return $options;
 	} // End validate_fields()
-	
+
 	/**
 	 * validate_field_text function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param string $input
@@ -695,10 +797,10 @@ class WooSlider_Settings_API {
 	public function validate_field_text ( $input ) {
 		return trim( esc_attr( $input ) );
 	} // End validate_field_text()
-	
+
 	/**
 	 * validate_field_checkbox function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param string $input
@@ -711,10 +813,10 @@ class WooSlider_Settings_API {
 			return (bool)$input;
 		}
 	} // End validate_field_checkbox()
-	
+
 	/**
 	 * validate_field_multicheck function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param string $input
@@ -722,15 +824,15 @@ class WooSlider_Settings_API {
 	 */
 	public function validate_field_multicheck ( $input ) {
 		$input = (array) $input;
-		
+
 		$input = array_map( 'esc_attr', $input );
-		
+
 		return $input;
 	} // End validate_field_multicheck()
-	
+
 	/**
 	 * validate_field_range function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param string $input
@@ -744,7 +846,7 @@ class WooSlider_Settings_API {
 
 	/**
 	 * validate_field_url function.
-	 * 
+	 *
 	 * @access public
 	 * @since 1.0.0
 	 * @param string $input
@@ -757,7 +859,7 @@ class WooSlider_Settings_API {
 	/**
 	 * check_field_text function.
 	 * @param  string $input String of the value to be validated.
-	 * @since  1.1.0
+	 * @since  2.0.0
 	 * @return boolean Is the value valid?
 	 */
 	public function check_field_text ( $input ) {
@@ -768,7 +870,7 @@ class WooSlider_Settings_API {
 
 	/**
 	 * add_error function.
-	 * 
+	 *
 	 * @access protected
 	 * @since 1.0.0
 	 * @param string $key
@@ -783,7 +885,7 @@ class WooSlider_Settings_API {
 		}
 		$this->errors[$key] = $message;
 	} // End add_error()
-	
+
 	protected function parse_errors () {
 		if ( count ( $this->errors ) > 0 ) {
 			foreach ( $this->errors as $k => $v ) {
@@ -794,7 +896,7 @@ class WooSlider_Settings_API {
 			add_settings_error( $this->token . '-errors', $this->token, $message, 'updated' );
 		}
 	} // End parse_errors()
-	
+
 	/**
 	 * get_array_field_types function.
 	 *

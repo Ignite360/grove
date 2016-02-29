@@ -18,6 +18,18 @@
 	</header><!-- .entry-header -->
 
 	<div class="entry-content">
+    	<?php
+				
+				$feat_image = wp_get_attachment_url( get_post_thumbnail_id($post->ID) );
+		
+			if ($feat_image != '') {	  ?>
+				
+                <img class="post_featured_img" src="<?php echo $feat_image; ?>" />
+                
+			<?php
+			}
+		
+		?>
 		<?php the_content(); ?>
 		<?php wp_link_pages( array( 'before' => '<div class="page-links">' . __( 'Pages:', 'grove' ), 'after' => '</div>' ) ); ?>
 	</div><!-- .entry-content -->

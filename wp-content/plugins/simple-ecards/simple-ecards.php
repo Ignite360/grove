@@ -2,7 +2,7 @@
 /*
 	Plugin Name: Simple Ecards
 	Description: Users may send a card and add a custom message. <strong>[simple_ecards]</strong>
-	Version: 1.0
+	Version: 2.0
 	Author: Ignite360, Inc.
 	License: GPL2
 
@@ -110,6 +110,10 @@ function simple_ecards_shortcode($atts)
 		}
 	}
 	
+	// reCaptcha
+	require_once(plugin_dir_path(__FILE__) . 'recaptcha/recaptchalib.php');
+	$public_key = '6Lf8U-4SAAAAAJIKHOalWm17jO7xH_tDv2Y8eAqz';
+	
 	// Preloader
 	$return = "<div id='simple_ecards_preloader'>";
 	foreach($all_cards as $card)
@@ -119,7 +123,7 @@ function simple_ecards_shortcode($atts)
 	$return .= "</div><!-- #simple_ecards_preloader -->";
 
 	// Form
-	$return .= "<form id='simple_ecards_send_form'>";
+	$return .= "<form id='simple_ecards_send_form' method='post'>";
 		$return .= "<fieldset id='simple_ecards_image_select'>";
 			$return .= "<legend id='simple_ecards_image_select_legend'><strong>Select a Card</strong></legend>";
 			$return .= "<div id='simple_ecards_card_wrapper'>";
@@ -149,7 +153,9 @@ function simple_ecards_shortcode($atts)
 			$return .= "<label for='simple_ecards_message'><strong>Message:</strong>";
 			$return .= "<textarea name='message' id='simple_ecards_message'></textarea></label>";
 		$return .= "</fieldset><!-- #simple_ecards_mail_info -->";
-
+		$return .= "<fieldset id='simple_ecards_recaptcha'>";
+			$return .= recaptcha_get_html($public_key);
+		$return .= "</fieldset><!-- #simple_ecards_recaptcha -->";
 		$return .= "<fieldset id='simple_ecards_submit_section'>";
 			$return .= "<input type='submit' id='simple_ecards_submit' value='Send' />";
 		$return .= "</fieldset><!-- #simple_ecards_submit_section -->";
@@ -176,16 +182,39 @@ function simple_ecards_send_callback()
 		'message' => $_GET['message']
 	);
 
+	// reCaptcha
+	require_once(plugin_dir_path(__FILE__) . 'recaptcha/recaptchalib.php');
+	$private_key = '6Lf8U-4SAAAAAHg4-Qd3OIyMzssb1tPayo1kPiAX';
+	$resp = recaptcha_check_answer(
+		$private_key,
+		$_SERVER['REMOTE_ADDR'],
+		$_GET['recaptcha_challenge_field'],
+		$_GET['recaptcha_response_field']
+	);
+
+	if(!$resp->is_valid)
+	{
+		die ("The reCAPTCHA wasn't entered correctly. Go back and try it again." . "(reCAPTCHA said: " . $resp->error . ")");
+	}
+
 	if(validate_cardinfo($card_info))
 	{
 
 		add_filter('wp_mail_content_type', 'set_html_content_type');
 		$body = generate_ecard($card_info['card'], $card_info['message']);
 		$fromtemp = get_option('simple_ecard_from_email');
+		$headers = '';
+
 		if ($fromtemp != ''){
 			$headers = 'From: E-Invite Card <'.$fromtemp.'>' . "\r\n";
 		}
-		$sent = wp_mail($card_info['send_to'], stripslashes($card_info['subject']), $body,$headers);
+
+		elseif(!empty($card_info['send_from']) && !empty($card_info['send_from_name']))
+		{
+			$headers = 'From: ' . $card_info['send_from_name'] . '<' . $card_info['send_from'] . '>' . "\r\n";
+		}
+		
+		$sent = wp_mail($card_info['send_to'], stripslashes($card_info['subject']), $body, $headers);
 		remove_filter('wp_mail_content_type', 'set_html_content_type');
 		if($sent)
 		{
@@ -201,7 +230,7 @@ function simple_ecards_send_callback()
 	}
 }
 
-add_action('right_now_content_table_end', 'simple_ecards_right_now');
+add_action('dashboard_glance_items', 'simple_ecards_right_now');
 function simple_ecards_right_now()
 {
 	if(!post_type_exists('simple_ecard'))
@@ -212,25 +241,20 @@ function simple_ecards_right_now()
 	$text = _n('Ecard', 'Ecards', intval($num_posts->publish));
 	if(current_user_can('edit_posts'))
 	{
-		$num = "<a href='edit.php?post_type=simple_ecard'>$num</a>";
-		$text = "<a href='edit.php?post_type=simple_ecard'>$text</a>";
+		$num = "<a href='edit.php?post_type=simple_ecard'>$num";
+		$text = "$text</a>";
 	}
-        echo '<td class="first b b-simple_ecard">' . $num . '</td>';
-        echo '<td class="t simple_ecard">' . $text . '</td>';
-
-	echo '</tr>';
+	echo "<li class='ecard-count'>$num $text</li>";
 
 	if ($num_posts->pending > 0) {
 		$num = number_format_i18n( $num_posts->pending );
 		$text = _n( 'Ecard Pending', 'Ecards Pending', intval($num_posts->pending) );
 		if ( current_user_can( 'edit_posts' ) ) {
-			$num = "<a href='edit.php?post_status=pending&post_type=simple_ecard'>$num</a>";
-			$text = "<a href='edit.php?post_status=pending&post_type=simple_card'>$text</a>";
+			$num = "<a href='edit.php?post_status=pending&post_type=simple_ecard'>$num";
+			$text = "$text</a>";
 		}
-		echo '<td class="first b b-simple_ecard">' . $num . '</td>';
-		echo '<td class="t simple_ecard">' . $text . '</td>';
-
-		echo '</tr>';
+		echo "<li class='ecard-count'>$num $text</li>";
+		
         }
 }
 

@@ -41,7 +41,7 @@ function cmb_sample_metaboxes( array $meta_boxes ) {
 		'priority'   => 'high',
 		'show_names' => true, // Show field names on the left
 		'fields'     => array(
-			array(
+			/*array(
 				'name'    => 'Show sidebar?',
 				'desc'    => 'Should this entry show the sidebar?',
 				'id'      => $prefix . 'hide_sidebar',
@@ -51,7 +51,7 @@ function cmb_sample_metaboxes( array $meta_boxes ) {
 					array( 'name' => '<img src="'.site_url().'/wp-content/mu-plugins/inc/images/layout-sidebar-left.png" width="72" title="Sidebar on left">', 'value' => 'left', ),
 					array( 'name' => '<img src="'.site_url().'/wp-content/mu-plugins/inc/images/layout-no-sidebar.png" width="72" title="No sidebar">', 'value' => 'hide', ),
 				),
-			),
+			),   */
 			array(
 				'name'    => 'Banner size',
 				'desc'    => 'How large should the main image be?',

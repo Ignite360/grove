@@ -79,6 +79,8 @@ get_header(); ?>
 						 * called content-___.php (where ___ is the Post Format name) and that will be used instead.
 						 */
 						get_template_part( 'content', get_post_format() );
+						
+						
 					?>
 
 				<?php endwhile; ?>

@@ -35,7 +35,7 @@ class WooSlider_Widget_Base extends WP_Widget {
 
 	/**
 	 * __construct function.
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -64,7 +64,7 @@ class WooSlider_Widget_Base extends WP_Widget {
 		$control_ops = array( 'width' => 250, 'height' => 350, 'id_base' => $this->woo_widget_idbase );
 
 		/* Create the widget. */
-		$this->WP_Widget( $this->woo_widget_idbase, $this->woo_widget_title, $widget_ops, $control_ops );
+		parent::__construct( $this->woo_widget_idbase, $this->woo_widget_title, $widget_ops, $control_ops );
 	} // End init()
 
 	/**
@@ -80,9 +80,9 @@ class WooSlider_Widget_Base extends WP_Widget {
 		if ( $slideshow_html == '' ) { return; }
 
 		$html = '';
-		
+
 		extract( $args, EXTR_SKIP );
-		
+
 		/* Our variables from the widget settings. */
 		$title = apply_filters('widget_title', $instance['title'], $instance, $this->id_base );
 
@@ -93,12 +93,12 @@ class WooSlider_Widget_Base extends WP_Widget {
 		if ( $title ) {
 			echo $before_title . esc_html( $title ) . $after_title;
 		}
-		
+
 		/* Widget content. */
-		
+
 		// Add actions for plugins/themes to hook onto.
 		do_action( $this->woo_widget_cssclass . '_top' );
-		
+
 		// Load widget content here.
 		$html = '';
 
@@ -134,7 +134,7 @@ class WooSlider_Widget_Base extends WP_Widget {
 
 		/* Save fields for the various contexts. */
 		$fields = $wooslider->admin->generate_default_conditional_fields( array( $this->slider_type => $this->slider_type ) );
-		
+
 		/* Advanced Settings switch and related fields. */
 		$instance['show_advanced_settings'] = (bool)intval( $new_instance['show_advanced_settings'] );
 
@@ -204,7 +204,7 @@ class WooSlider_Widget_Base extends WP_Widget {
 
    /**
     * form function.
-    * 
+    *
     * @since  1.0.0
     * @access public
     * @param array $instance
@@ -217,7 +217,7 @@ class WooSlider_Widget_Base extends WP_Widget {
 		/* Set up some default widget settings. */
 		/* Make sure all keys are added here, even with empty string values. */
 		$defaults = $this->defaults;
-		
+
 		// Allow child themes/plugins to filter here.
 		$defaults = apply_filters( $this->woo_widget_idbase . '_widget_defaults', $defaults, $this );
 		$defaults['show_advanced_settings'] = 0;
@@ -266,8 +266,8 @@ class WooSlider_Widget_Base extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'theme' ); ?>"><?php _e( 'Slideshow Theme:', 'wooslider' ); ?></label>
 			<select name="<?php echo $this->get_field_name( 'theme' ); ?>" class="widefat" id="<?php echo $this->get_field_id( 'theme' ); ?>">
 				<?php foreach ( $themes as $k => $v ) { ?>
-					<option value="<?php echo esc_attr( $k ); ?>"<?php selected( $instance['theme'], $k ); ?>><?php echo $v['name']; ?></option> 
-				<?php } ?>      
+					<option value="<?php echo esc_attr( $k ); ?>"<?php selected( $instance['theme'], $k ); ?>><?php echo $v['name']; ?></option>
+				<?php } ?>
 			</select>
 		</p>
 		<?php
@@ -336,6 +336,7 @@ class WooSlider_Widget_Base extends WP_Widget {
 	 */
 	private function generate_field_by_type ( $type, $args, $instance ) {
 		if ( is_array( $args ) && isset( $args['key'] ) && isset( $args['data'] ) ) {
+			$html = '';
 			switch ( $type ) {
 				// Select fields.
 				case 'select':
@@ -343,8 +344,12 @@ class WooSlider_Widget_Base extends WP_Widget {
 				case 'range':
 					$html = '<select name="' . esc_attr( $this->get_field_name( $args['key'] ) ) . '" id="' . esc_attr( $this->get_field_id( $args['key'] ) ) . '" class="widefat">' . "\n";
 					foreach ( $args['data']['options'] as $k => $v ) {
-
-						$html .= '<option value="' . esc_attr( $k ) . '"' . selected( $k, $instance[$args['key']], false ) . '>' . $v . '</option>' . "\n";
+                        // check the selected value
+                        $selected_value = '';
+                        if( isset( $instance[$args['key']] ) ){
+                            $selected_value = $instance[$args['key']];
+                        }
+						$html .= '<option value="' . esc_attr( $k ) . '"' . selected( $k, $selected_value, false ) . '>' . $v . '</option>' . "\n";
 					}
 					$html .= '</select>' . "\n";
 
@@ -354,10 +359,10 @@ class WooSlider_Widget_Base extends WP_Widget {
 				// Multiple checkboxes.
 				case 'multicheck':
 				if ( isset( $args['data']['options'] ) && ( count( (array)$args['data']['options'] ) > 0 ) ) {
-					$html = '<div class="multicheck-container" style="height: 100px; overflow-y: auto;">' . "\n";
+					$html = '<div class="multicheck-container">' . "\n";
 					foreach ( $args['data']['options'] as $k => $v ) {
 						$checked = '';
-						if ( in_array( $k, (array)$instance[$args['key']] ) ) { $checked = ' checked="checked"'; }
+						if ( isset( $instance[$args['key']] ) && in_array( $k, (array)$instance[$args['key']] ) ) { $checked = ' checked="checked"'; }
 						$html .= '<input type="checkbox" name="' . esc_attr( $this->get_field_name( $args['key'] ) ) . '[]" class="multicheck multicheck-' . esc_attr( $args['key'] ) . '" value="' . esc_attr( $k ) . '"' . $checked . ' /> ' . $v . '<br />' . "\n";
 					}
 					$html .= '</div>' . "\n";
@@ -369,7 +374,13 @@ class WooSlider_Widget_Base extends WP_Widget {
 				// Single checkbox.
 				case 'checkbox':
 				if ( isset( $args['key'] ) && $args['key'] != '' ) {
-					$html .= '<input type="checkbox" name="' . esc_attr( $this->get_field_name( $args['key'] ) ) . '" class="checkbox checkbox-' . esc_attr( $args['key'] ) . '" value="1"' . checked( '1', $instance[$args['key']], false ) . ' /> ' . "\n";
+                    // setup teh checked value
+                    $checked_value = '';
+                    if( isset( $instance[$args['key']] ) ){
+                        $checked_value = $instance[$args['key']];
+                    }
+
+					$html .= '<input type="checkbox" name="' . esc_attr( $this->get_field_name( $args['key'] ) ) . '" class="checkbox checkbox-' . esc_attr( $args['key'] ) . '" value="1"' . checked( '1', $checked_value , false ) . ' /> ' . "\n";
 					echo $html;
 				}
 

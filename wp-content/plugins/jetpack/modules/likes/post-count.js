@@ -1,8 +1,10 @@
-var wpPostLikeCount;
+/* jshint onevar: false, smarttabs: true */
+
+var wpPostLikeCount = wpPostLikeCount || {};
 
 (function($) {
 
-	wpPostLikeCount = {
+	wpPostLikeCount = jQuery.extend( wpPostLikeCount, {
 
 		jsonAPIbase: 'https://public-api.wordpress.com/rest/v1',
 		APIqueue:    [],
@@ -28,42 +30,31 @@ var wpPostLikeCount;
 				data:    '',
 				success: function( response ) {
 					for ( var path in response ) {
-						if ( ! response[path]['error_data'] ) {
+						if ( ! response[path].error_data ) {
 							var urlPieces = path.split( '/' ); // pieces[4] = post id;
 							var post_id = urlPieces[4];
 							wpPostLikeCount.showCount( post_id, response[path].found );
 						}
 					}
 				},
-				error: function( response ) {
+				error: function( /*response*/ ) {
 				}
 			};
 
 			var amp = '';
 			for( var i = 0; i < wpPostLikeCount.APIqueue.length; i++ ) {
-				if ( i > 0 )
+				if ( i > 0 ) {
 					amp = '&';
+				}
 				batchRequest.data += amp + 'urls[]=' + wpPostLikeCount.APIqueue[i];
 			}
 
 			wpPostLikeCount.request( batchRequest );
-		},
-
-		request: function( options ) {
-			return $.ajax( {
-				type: 'GET',
-				url: wpPostLikeCount.jsonAPIbase + options.path,
-				dataType : "jsonp",
-				data: options.data,
-				success: function( response ) { options.success( response  ) },
-				error: function( response ) { options.error( response ) }
-			} )
 		}
-
-	};
+	} );
 
 })(jQuery);
 
-jQuery(document).ready(function($) {
+jQuery(document).ready(function(/*$*/) {
 	wpPostLikeCount.wpPostLikeCount();
 });

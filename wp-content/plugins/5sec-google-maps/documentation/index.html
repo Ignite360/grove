@@ -1,0 +1,278 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>5sec Google Maps Documentation</title>
+  <meta name="description" content="Monofolio HTML template documentation by Web factory Ltd. Sold exclusively on ThemeForest.">
+  <meta name="lang" content="en">
+  <link rel="stylesheet" href="assets/blueprint-css/screen.css" type="text/css" media="screen, projection">
+  <link rel="stylesheet" href="assets/blueprint-css/print.css" type="text/css" media="print">
+  <!--[if lt IE 8]><link rel="stylesheet" href="assets/blueprint-css/ie.css" type="text/css" media="screen, projection"><![endif]-->
+  <link rel="stylesheet" href="assets/blueprint-css/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
+  <style type="text/css" media="screen">
+    p, table, hr, .box { margin-bottom:25px; }
+    .box p { margin-bottom:10px; }
+    .struct { border: 1px solid black; padding: 15px; margin: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h3 class="center alt">&ldquo;5sec Google Maps&rdquo; Documentation by &ldquo;Web factory Ltd&rdquo; v1.6</h3>
+    
+    <hr>
+    
+    <h1 class="center">&ldquo;5sec Google Maps&rdquo; WordPress plugin</h1>
+    
+    <div class="borderTop">
+      <div class="span-6 colborder info prepend-1">
+        <p class="prepend-top">
+          <strong>
+          Created: 2011/08/22, revision 15<br />
+          By: Web factory Ltd<br>
+          Support: <a href="http://codecanyon.net/user/webfactory">via CodeCanyon</a>
+          </strong>
+        </p>
+      </div><!-- end div .span-6 -->    
+  
+      <div class="span-12 last">
+        <p class="prepend-top append-0">Thank you very much for purchasing our WordPress plugin. If you have any questions that are beyond the scope of this help file, please feel free to email us via our user page <a href="http://codecanyon.net/user/webfactory">contact form</a>. Have a good one!</p>
+      </div>
+    </div><!-- end div .borderTop -->
+    
+    <hr>
+    
+    <h2 id="toc" class="alt">Table of Contents</h2>
+    <ol class="alpha">
+      <li><a href="http://5sec-gmap.webfactoryltd.com/">Online documentation, examples and help</a></li>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#examples">Examples</a></li>
+      <li><a href="#variables">Configuring the maps</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#credits">Sources and Credits</a></li>
+    </ol>
+    
+    <hr />
+    
+    <h3 id="installation"><strong>B) Installation</strong> - <a href="#toc">top</a></h3>
+    
+    <ol>
+<li>Download the plugin ZIP file (<i>5sec-gmaps-v15.zip</i>) on your computer.</li>
+<li>Open your WP admin and goto Plugins -&gt; Add New -&gt; Upload. Browse for that ZIP file on your computer and hit "Install Now".</li>
+<li>Activate the plugin.</li>
+<li>Open any post, page, custom post type or text widget and create your map with [gmap] shortcode.</li>
+</ol>
+
+<h4>5 seconds getting started guide</h4>
+    <p>Open any post, page or text widget. Enter: [gmap]some address[/gmap] and you're done! The mape will be displayed in that place.</p>
+    
+
+<p>If something went wrong read the <a href="#faq">FAQ</a>.</p>
+      
+    <hr>
+
+    <h3 id="examples"><strong>C) Examples</strong> - <a href="#toc">top</a></h3>
+
+<p>[gmap]Times Square, New York, USA[/gmap]<br />
+Only one (and the only mandatory) parameter is defined - address.</p>
+
+
+<p>[gmap show_description="true" icon="star" description="White House|The official residence and principal workplace of the President of the United States (DIRECTIONS)."]White House, Washington, USA[/gmap]<br />
+
+Description bubble will be visible immediately after map is loaded (show_description="true"); if this is false (default) you need to click on the marker to show the bubble. Icon is changed to "star" and we entered a description in "title|rest of text" format. The "DIRECTIONS" will be replaced by a link to Google Maps on which you can get directions to the entered address.<br />
+<b>Important:</b> if you're using double quotes to write the shortcode then you must use single quotes for your HTML, otherwise the shortcode wont be parsed properly.</p>
+
+<p>[gmap width="400px" height="400px" type="hybrid" zoom=10]London, UK[/gmap]<br />
+
+After defining width and height in pixels we set the map type to hybrid (satellite + roads) and zoom level to 10 (which is 50% of [0-20]).</p>
+
+<p>[gmap zoom=11 description="$desc"]$my_address[/gmap]<br />
+
+Both the address and description are pulled from custom fields which we defined for this page. Click on the marker to toggle description.</p>
+
+<p>[gmap icon="http://www.graphicsfactory.com/clip-art/image_files/tn_image/1/570901-tn_sun_1102.gif" debug=1 zoom=12]Los Angeles, USA[/gmap]<br />
+The icon is custom, defined via full URL and debugging is turned on.</p>
+
+
+<p>[gmap icon="shop" zoom=15 height="200px"]34th street, NY, USA[/gmap]<br />
+Placing a map in the sidebar is as easy as putting it in a post. You'll probably just need to adjust the hight a bit.</p>
+     
+    <hr>
+    
+    <h3 id="variables"><strong>D) Configuring the maps</strong> - <a href="#toc">top</a></h3>
+    
+    <h4>Available variables</h4>
+
+<p>Use in form: [gmap variable1="value" variable2="value"]address[/gmap]</p>
+
+<table width="100%">
+<tr>
+ <td><b>Variable name</b></td>
+ <td><b>Description</b></td>
+ <td><b>Default value</b></td>
+ <td><b>Acceptable values</b></td>
+</tr>
+<tr>
+ <td>address</td>
+ <td>Location you want to show on the map.<br />You can enter the address via a variable or between the [ss][gmap][/gmap][/ss] tags (this method is recommend).</td>
+ <td><i>none</i></td>
+ <td>Any address in the world that can be understood by Google Geocoding API.</td>
+</tr>
+<tr>
+ <td>lat</td>
+ <td>Latitude of the location you want to show on the map. If the coordinates are given the address is ignored.</td>
+ <td><i>none</i></td>
+ <td>number, ie: 39.1684</td>
+</tr>
+<tr>
+ <td>lng</td>
+ <td>Longitude of the location you want to show on the map. If the coordinates are given the address is ignored.</td>
+ <td><i>none</i></td>
+ <td>number, ie: -104.14</td>
+</tr>
+<tr>
+ <td>zoom</td>
+ <td>Map zoom level.</td>
+ <td>17</td>
+ <td>0 - 20</td>
+</tr>
+<tr>
+ <td>description</td>
+ <td>Description/bubble text shown when user clicks on the marker.</td>
+ <td><i>none</i></td>
+ <td>Any HTML or plain-text. Use "title | text" to automatically format text. String "DIRECTIONS" will be replaced by a link which is used to get driving directions to specified address.</td>
+</tr>
+<tr>
+ <td>show_description</td>
+ <td>Show description bubble immediately after map is loaded. If set to <i>false</i> user has to click the marker to view description.</td>
+ <td>false</td>
+ <td>true, false</td>
+</tr>
+<tr>
+ <td>width</td>
+ <td>Map canvas width.</td>
+ <td>100%</td>
+ <td>Any acceptable CSS value. Ie: 200px, 300em, 60%.</td>
+</tr>
+<tr>
+ <td>height</td>
+ <td>Map canvas height.</td>
+ <td>400px</td>
+ <td>Any acceptable CSS value. Ie: 200px, 300em, 60%.</td>
+</tr>
+<tr>
+ <td>fullscreen</td>
+ <td>Whether to display or not the full screen button on map. If set to <i>true</i> jQuery is required on map page.</td>
+ <td>false</td>
+ <td>true, false</td>
+</tr>
+<tr>
+ <td>scroll</td>
+ <td>If set to false disables mouse wheel on the map usually used to zoom in and out.</td>
+ <td>true</td>
+ <td>true, false</td>
+</tr>
+<tr>
+ <td>icon</td>
+ <td>Icon/marker for selected address on the map.</td>
+ <td><i>none</i> (red pin)</td>
+ <td>Predefined pins: red, blue, yellow, green, gray, black, white, house, shop, chat, flag, star, default (Google maps icon) . Or you can enter the full URL to any image (size cca 35*35px).</td>
+</tr>
+<tr>
+ <td>type</td>
+ <td>Map type - the usual types you can select when using Google Maps.</td>
+ <td>roadmap</td>
+ <td>roadmap, satellite, hybrid, terrain</td>
+</tr>
+<tr>
+ <td>disable_cache</td>
+ <td>If you want to temporarily disable the cache, or rebuild it for a specific address set to "true". Otherwise be sure to set it on false or just don't define it.</td>
+ <td>false</td>
+ <td>true, false</td>
+</tr>
+<tr>
+ <td>post_id</td>
+ <td>If you're using custom field values in a sidebar or want to force another post ID besides the post you're currently in then specify this variable.</td>
+ <td>current post, page, custom post type ID</td>
+ <td>int; any valid post, page, custom post type ID</td>
+</tr>
+<tr>
+ <td>debug</td>
+ <td>Prints out various variables used in the process of map defining/creation.</td>
+ <td>false</td>
+ <td>true, false</td>
+</tr>
+</table>
+
+<h4>Using custom fields for variable values</h4><p>
+Instead of the usual <em>variable="value"</em> use <em>variable="$custom-field-name"</em> where custom-field-name is the actual custom field in the current post/page/custom post type.<br>
+The only thing to remember is: place the dollar sign ($) in front of custom field name.<br>
+
+Example: [gmap zoom="$zoom-level"]$my-address[/gmap]<br>
+
+The post ID will be auto-detected, but if needed, enter it manually via "post_id" parameter.</p>
+    
+    <hr>
+    
+    <h3 id="faq"><strong>E) FAQ</strong> - <a href="#toc">top</a></h3>
+    
+    <h4>Plugin may not be working - <em>wp_footer()</em> issue</h4>
+<p>In order to work properly the plugin does not require <em>wp_footer()</em> function call in theme <em>footer.php</em>. However we stongly  suggest that you use the <em>wp_footer()</em> function call. If you don't have it plugin is going to try and work around it and give you a warning in admin.<br>
+If you're theme doesn't have that code and the plugin is not working properly place this code just above the &lt;/body&gt; tag:
+<br><code>&lt;?php wp_footer(); ?&gt;</code><br>
+After you make any changes to your theme regarding the <em>wp_footer()</em> call please deactivate/activate the plugin. Don't worry, no maps will be lost.</p>
+
+<h4>Plugin is not working - shortcode name conflict</h4>
+<p>If another plugin is using the [gmap] shortcode name you have to either disable that plugin or change the shortcode 5sec Google Maps uses.
+Changing the shortcode name is simple. Open <em>5sec-gmaps.php</em> with a text editor and find the <em>define</em> statement on line 12. Change "gmap" into something similar, ie: gmap2. Close the file and re-upload it on the server.</p>
+
+<h4>Bubble/description on map is broken</h4>
+<p>Your CSS is interfering with the map's CSS. There are numerous things that could be wrong but for start add this rules to your CSS:</p>
+<pre>&lt;style type="text/css"&gt;
+.gmap-canvas {
+  line-height: 98%;
+  font-size: 99%;
+}
+&lt;/style&gt;</pre>
+
+<h4>I entered location X as the address, but map shows location Y</h4>
+<p>Google didn't understand your address. Try writing it in more detail. Don't forget the city and country name. If you can't get it to work try your addresses on <a href="http://maps.google.com/">maps.google.com</a> and then copy/paste the address into the shortcode when you find the right combination.</p>
+
+<h4>Can I place multiple markers/addresses on the same map?</h4>
+<p>No, this plugin doesn't support that (for now).</p>
+
+<h4>Can I place multiple maps on the same page/post/screen?</h4>
+<p>Yes, as many as you like!</p>
+
+<h4>I'm getting some XML fetch/parse errors</h4>
+<p>Google Maps API is probably down. This happens rarely and lasts only for a couple of minutes. Be patient for a while.</p>
+
+<h4>Do parameters/variables have to be entered in any particular order?</h4>
+<p>No, you can define them in any order you like.</p>
+
+<h4>I'm using maps in tabs and they are not displayed correctly</h4>
+<p>Depending on the JS code you use for tabs Google Maps may not display correctly, more so if they are placed on a tab that's initially not selected. This is a known Google Maps issue.</p>
+    
+    <hr>
+    
+    <h3 id="credits"><strong>F) Sources and Credits</strong> - <a href="#toc">top</a></h3>
+    
+    <ul>
+    <li>No external PHP related assets or copyrighted materials were used in this script's code</li>
+    <li>Icons used: The Ultimate Free Web Designer’s Icon Sets<br>
+     Oliver Twardowski<br>
+     http://www.smashingmagazine.com/2010/04/15/the-ultimate-free-web-designer-s-icon-set-750-icons-incl-psd-sources/<br>
+     Free without any restrictions</li>
+    <li>Theme used for plugin preview is Clean Home by <a href="http://midmodesign.com/">Columbia, MO Web Design</a></li>
+    <li>By using the Google Maps API you agree to their <a href="http://code.google.com/apis/maps/faq.html#tos">Terms of Service</a></li>
+    </ul>
+     
+    <hr>
+    <p>Once again, <strong>thank you</strong> so much for purchasing this premium WordPress plugin. As stated at the beginning, we'd be glad to help you if you have any questions relating to this item. We'll do our best to assist. If you have a more general question relating to items on CodeCanyon, you might consider visiting the forums and asking your question in the "Item Discussion" section.</p> 
+    
+    <p class="append-bottom alt large"><strong>Web factory Ltd.</strong></p>
+    <p><a href="#toc">Go To Table of Contents</a></p>
+    
+    <hr class="space">
+  </div><!-- end div .container -->
+</body>
+</html>

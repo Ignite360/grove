@@ -3,7 +3,7 @@
 Plugin Name: Bulk Page Creator
 Plugin URI: http://solid-code.co.uk/2011/05/bulk-page-creator/
 Description: Allows you to create multiple pages in a batch/bulk manner saving time when initially setting up your WordPress site.
-Version: 1.0.6
+Version: 1.0.9
 Author: Dagan Lev
 Author URI: http://solid-code.co.uk
 
@@ -22,6 +22,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit('no access'); // disable direct access
+}
+
 if (!class_exists("sc_bulk_page_creator")) {
 	class sc_bulk_page_creator{
 		//the constructor that initializes the class
@@ -48,22 +52,22 @@ if (!class_exists("sc_bulk_page_creator")) {
 	}
 	
 	function sc_bpc_scripts(){
-		wp_register_script('sc-bpc-js', WP_PLUGIN_URL.'/bulk-page-creator/my-script.js', array('jquery'));
+		wp_register_script('sc-bpc-js', plugins_url() .'/bulk-page-creator/my-script.js', array('jquery'));
 		wp_enqueue_script('sc-bpc-js');
 	}
 	
 	function sc_bpc_styles(){
-		wp_register_style('sc-bpc-css',WP_PLUGIN_URL.'/bulk-page-creator/my-style.css');
+		wp_register_style('sc-bpc-css',plugins_url().'/bulk-page-creator/my-style.css');
 		wp_enqueue_style('sc-bpc-css');
 	}
 	
 	function sc_bpc_page_create(){
 		if(isset($_POST['sc-pages'])&&$_POST['sc-pages']!=''){
 			//form submitted
-			if(preg_match_all('/(\d+\|(-|new)?\d+\|[^\n]*)/',$_POST['sc-pages'],$match_pg)){
+			if(preg_match_all('/(\d+\|(-|new)?\d+\|[^\|]*\|[^\n]*)/',$_POST['sc-pages'],$match_pg)){
 				$newpage = array();
 				foreach($match_pg[0] as $pg_res){
-					if(preg_match('/((\d+)\|((-|new)?\d+)\|(.*))/',$pg_res,$rres)){
+					if(preg_match('/((\d+)\|((-|new)?\d+)\|([^\|]*)\|(.*))/',$pg_res,$rres)){
 						$parent = -1;
 						if($rres[4]=='new'){
 							$parent = $newpage[str_ireplace('new','',$rres[3])];
@@ -82,12 +86,13 @@ if (!class_exists("sc_bulk_page_creator")) {
 							'post_status' => $_POST['posttype'],
 							'post_parent' => $parent,
 							'post_title' => rtrim($rres[5]),
+							'page_template' => rtrim($rres[6]),
 							'post_content' => $pcontent);
 						
 						global $wpdb;
 						$params['menu_order'] = $wpdb->get_var("SELECT MAX(menu_order)+1 AS menu_order FROM {$wpdb->posts} WHERE post_type='page'");
 						$wpdb->flush();
-						
+
 						$newpage[$rres[2]] = wp_insert_post($params);
 					}
 				}
@@ -113,10 +118,12 @@ if (!class_exists("sc_bulk_page_creator")) {
 			<input type="checkbox" id="multiPages" name="multiPages" checked="checked" /> Multiple Pages mode<br />
 			<small>allows you to create multiple pages by seperating them with a comma; I.E. test1,test2,test3 - will create three pages (do not leave any spaces).</small>
 			</p>
+			<?php $templates = get_page_templates(); ?>
 			<table>
 				<tr>
 					<td>Page Name</td>
 					<td>Parent</td>
+					<?php echo($templates ? '<td>Template</td>' : ''); ?>
 					<td>&nbsp;</td>
 				</tr>
 				<tr>
@@ -124,6 +131,17 @@ if (!class_exists("sc_bulk_page_creator")) {
 					<td id="page_ids">
 						<?php wp_dropdown_pages('sort_column=menu_order&post_status=draft,publish&show_option_none=(No Parent)'); ?>
 					</td>
+					<?php
+						if($templates){
+							echo '<td>
+								<select id="page_template" name="page_template">
+									<option value="">Default</option>';
+							foreach ( $templates as $template_name => $template_filename ) {
+								echo "<option value=\"$template_filename\">$template_name</option>";
+							}
+							echo '</select></td>';
+						}
+					?>
 					<td><input onclick="sc_add_page();" type="button" class="button-secondary" value="Add Page" /></td>
 				</tr>
 			</table>

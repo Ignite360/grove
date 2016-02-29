@@ -1,10 +1,13 @@
 <?php
 /**
  * Module Name: Beautiful Math
- * Module Description: Mark up your posts with the <img src="//s0.wp.com/latex.php?latex=%5CLaTeX&amp;bg=transparent&amp;fg=000&amp;s=-2" alt="LaTeX logo" title="LaTeX" style="vertical-align: -25%" /> markup language, perfect for complex mathematical equations and other &#252;ber-geekery.
+ * Module Description: Use LaTeX markup language in posts and pages for complex equations and other geekery.
  * Sort Order: 12
  * First Introduced: 1.1
- * Requires Connection: Yes
+ * Requires Connection: No
+ * Auto Activate: Yes
+ * Module Tags: Writing
+ * Additional Search Queries: latex, math, equation, equations, formula, code
  */
 
 /**
@@ -83,7 +86,7 @@ function latex_shortcode( $atts, $content = '' ) {
 		's' => 0,
 		'bg' => latex_get_default_color( 'bg' ),
 		'fg' => latex_get_default_color( 'text', '000' )
-	), $atts ) );
+	), $atts, 'latex' ) );
 
 	return latex_render( latex_entity_decode( $content ), $fg, $bg, $s );
 }
@@ -101,4 +104,3 @@ add_filter( 'no_texturize_shortcodes', 'latex_no_texturize' );
 add_filter( 'the_content', 'latex_markup', 9 ); // before wptexturize
 add_filter( 'comment_text', 'latex_markup', 9 ); // before wptexturize
 add_shortcode( 'latex', 'latex_shortcode' );
-

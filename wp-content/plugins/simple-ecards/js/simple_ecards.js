@@ -44,6 +44,10 @@ jQuery(document).ready(function($) {
 		
 		else
 		{
+			// Make the nutton no longer clickable
+			$('#simple_ecards_submit').attr('disabled', 'disabled');
+			$('#simple_ecards_submit').val('Working');
+			
 
 			var SECard = $('#simple_ecards_card_select').val();
 			var SESendTo = $('#simple_ecards_send_to').val();
@@ -52,6 +56,9 @@ jQuery(document).ready(function($) {
 			var SEFromName = $('#simple_ecards_from_name').val();
 			var SESubject = $('#simple_ecards_subject').val();
 			var SEMessage = $('#simple_ecards_message').val();
+			var recaptcha_challenge_field = $('#recaptcha_challenge_field').val();
+			var recaptcha_response_field = $('#recaptcha_response_field').val();
+			
 
 			var data = {
 				'action' : 'simple_ecards_send',
@@ -61,7 +68,9 @@ jQuery(document).ready(function($) {
 				'send_from' : SEFrom,
 				'send_from_name' : SEFromName,
 				'subject' : SESubject,
-				'message' : SEMessage
+				'message' : SEMessage,
+				'recaptcha_challenge_field' : recaptcha_challenge_field,
+				'recaptcha_response_field' : recaptcha_response_field
 			};
 
 			$.get(ajax_data['ajax_url'], data, function(response)

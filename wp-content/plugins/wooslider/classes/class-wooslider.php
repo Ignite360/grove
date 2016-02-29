@@ -45,10 +45,10 @@ class WooSlider {
 		$this->plugin_path = trailingslashit( dirname( $file ) );
 
 		$this->load_plugin_textdomain();
-		add_action( 'init', array( &$this, 'load_localisation' ), 0 );
+		add_action( 'init', array( $this, 'load_localisation' ), 0 );
 
 		// Run this on activation.
-		register_activation_hook( $this->file, array( &$this, 'activation' ) );
+		register_activation_hook( $this->file, array( $this, 'activation' ) );
 
 		// Load the Utils class.
 		require_once( 'class-wooslider-utils.php' );
@@ -56,6 +56,8 @@ class WooSlider {
 		// Setup post types.
 		require_once( 'class-wooslider-posttypes.php' );
 		$this->post_types = new WooSlider_PostTypes();
+		$this->post_types->token = $this->token;
+		$this->post_types->file = $this->file;
 
 		// Setup settings screen.
 		require_once( 'class-wooslider-settings-api.php' );
@@ -70,7 +72,7 @@ class WooSlider {
 		}
 
 		$this->settings->setup_settings();
-		
+
 		// Differentiate between administration and frontend logic.
 		if ( is_admin() ) {
 			require_once( 'class-wooslider-admin.php' );
@@ -83,8 +85,8 @@ class WooSlider {
 			$this->frontend->init();
 		}
 
-		add_action( 'widgets_init', array( &$this, 'register_widgets' ) );
-		add_action( 'after_setup_theme', array( &$this, 'ensure_post_thumbnails_support' ) );
+		add_action( 'widgets_init', array( $this, 'register_widgets' ) );
+		add_action( 'after_setup_theme', array( $this, 'ensure_post_thumbnails_support' ) );
 	} // End __construct()
 
 	/**
@@ -121,7 +123,7 @@ class WooSlider {
 	    $domain = 'wooslider';
 	    // The "plugin_locale" filter is also used in load_plugin_textdomain()
 	    $locale = apply_filters( 'plugin_locale', get_locale(), $domain );
-	 
+
 	    load_textdomain( $domain, WP_LANG_DIR . '/' . $domain . '/' . $domain . '-' . $locale . '.mo' );
 	    load_plugin_textdomain( $domain, FALSE, dirname( plugin_basename( $this->file ) ) . '/lang/' );
 	} // End load_plugin_textdomain()

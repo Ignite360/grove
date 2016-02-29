@@ -185,7 +185,7 @@ class Highlander_Comments_Base {
 	 * @return If no
 	 */
 	function allow_logged_out_user_to_comment_as_external() {
-		if ( !$this->is_highlander_comment_post( 'facebook', 'twitter' ) ) {
+		if ( !$this->is_highlander_comment_post( 'facebook', 'twitter', 'googleplus' ) ) {
 			return;
 		}
 
@@ -213,7 +213,7 @@ class Highlander_Comments_Base {
 		}
 
 		// Bail if this is not a guest or external service credentialed request
-		if ( !$this->is_highlander_comment_post( 'guest', 'facebook', 'twitter' ) ) {
+		if ( !$this->is_highlander_comment_post( 'guest', 'facebook', 'twitter', 'googleplus' ) ) {
 			return $comment_data;
 		}
 
@@ -233,12 +233,18 @@ class Highlander_Comments_Base {
 			}
 		}
 
+		$author_change = false;
 		foreach ( array( 'comment_author' => 'author', 'comment_author_email' => 'email', 'comment_author_url' => 'url' ) as $comment_field => $post_field ) {
+			if ( $comment_data[$comment_field] != $_POST[$post_field] && 'url' != $post_field ) {
+				$author_change = true;
+			}
 			$comment_data[$comment_field] = $_POST[$post_field];
 		}
 
-		// Mark as guest comment
-		$comment_data['user_id'] = $comment_data['user_ID'] = 0;
+		// Mark as guest comment if name or email were changed
+		if ( $author_change ) {
+			$comment_data['user_id'] = $comment_data['user_ID'] = 0;
+		}
 
 		return $comment_data;
 	}
@@ -264,6 +270,7 @@ class Highlander_Comments_Base {
 
 		// Set comment author cookies
 		if ( ( 'wordpress' != $id_source ) && is_user_logged_in() ) {
+			/** This filter is already documented in core/wp-includes/comment-functions.php */
 			$comment_cookie_lifetime = apply_filters( 'comment_cookie_lifetime', 30000000 );
 			setcookie( 'comment_author_'       . COOKIEHASH, $comment->comment_author, time() + $comment_cookie_lifetime,              COOKIEPATH, COOKIE_DOMAIN );
 			setcookie( 'comment_author_email_' . COOKIEHASH, $comment->comment_author_email, time() + $comment_cookie_lifetime,        COOKIEPATH, COOKIE_DOMAIN );

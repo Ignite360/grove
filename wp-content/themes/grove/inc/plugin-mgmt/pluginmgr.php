@@ -43,27 +43,17 @@
 
 			array(
 				'name'	  => '5sec Google Maps',
-				'slug'	  => '5sec-gmaps',
+				'slug'	  => '5sec-google-maps',
 				'required'  => true,
 			),
 	 
-			array(
-				'name'	  => 'Make Clickable Tweet',
-				'slug'	  => 'make-clickable-tweet',
-				'required'  => true,
-			),
-			
+
 			array(
 				'name'	  => 'Social Bartender',
 				'slug'	  => 'social-bartender',
 				'required'  => true,
 			),
 			
-			array(
-				'name'	  => 'Symbol Setup',
-				'slug'	  => 'symbolsetup',
-				'required'  => false,
-			),
 			
 			array(
 				'name'	  => 'The Events Calendar',
@@ -78,15 +68,14 @@
 			),
 			
 			array(
-				'name'	  => 'Wordpress Importer',
-				'slug'	  => 'wordpress-importer',
-				'required'  => false,
+				'name'	  => 'Simple Shortcodes',
+				'slug'	  => 'smpl-shortcodes',
+				'required'  => true,
 			),
-			
 			array(
-				'name'	  => 'Zilla Shortcodes',
-				'slug'	  => 'zilla-shortcodes',
-				'required'  => false,
+				'name'	  => 'Simple Ecards',
+				'slug'	  => 'simple-ecards',
+				'required'  => true,
 			),
 	 
 		);

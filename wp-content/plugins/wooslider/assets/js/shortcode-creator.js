@@ -18,7 +18,43 @@ jQuery(document).ready( function ( e ) {
 			jQuery( '.conditional:not(".conditional-' + currentType + '")' ).hide();
 			jQuery( '.conditional-' + currentType + '' ).show();
 		}
+		if( currentType == 'slides'){
+			if(jQuery('#imageslide').attr('checked')) {
+				jQuery( '.conditional-slide-settings' ).show();
+				jQuery( '.conditional-slide-settings--carousel' ).hide();
+			} else {
+				jQuery( '.conditional-slide-settings' ).hide();
+				jQuery( '.conditional-slide-settings--carousel' ).show();
+			}
+
+			if(jQuery('#carousel').attr('checked')) {
+				jQuery( '.conditional-slide-settings' ).hide();
+				jQuery( '.conditional-slide-settings--imageslide' ).hide();
+			} else {
+				jQuery( '.conditional-slide-settings--imageslide' ).show();
+			}
+
+			jQuery('#imageslide').click(function () {
+				if(jQuery('#imageslide').attr('checked')) {
+					jQuery( '.conditional-slide-settings' ).show();
+					jQuery( '.conditional-slide-settings--carousel' ).hide();
+				} else {
+					jQuery( '.conditional-slide-settings' ).hide();
+					jQuery( '.conditional-slide-settings--carousel' ).show();
+				}
+			});
+			jQuery('#carousel').click(function () {
+				if(jQuery('#carousel').attr('checked')) {
+					jQuery( '.conditional-slide-settings' ).hide();
+					jQuery( '.conditional-slide-settings--imageslide' ).hide();
+				} else {
+					jQuery( '.conditional-slide-settings' ).hide();
+					jQuery( '.conditional-slide-settings--imageslide' ).show();
+				}
+			});
+		}
 	});
+
 
 	// Shortcode creator logic.
 	jQuery( 'form#wooslider-insert' ).submit( function ( e ) {
@@ -65,7 +101,7 @@ jQuery(document).ready( function ( e ) {
 			var element = jQuery( this ).find( 'input.multicheck.multicheck-' + prop + ':checked' );
 			// Ignore the form fields if they're in a conditional box and that box is hidden.
 			if ( element.parents( '.conditional' ).length == 1 && element.parents( '.conditional' ).is( ':hidden' ) ) { continue; }
-			
+
 			var options_string = '';
 			if ( element.length && element.is( 'input[type="checkbox"]' ) && element.hasClass( 'multicheck' ) ) {
 				element.each( function ( i, e ) {
@@ -85,7 +121,7 @@ jQuery(document).ready( function ( e ) {
 			var element = jQuery( this ).find( 'input[type="radio"][name="' + prop + '"]:checked' );
 			// Ignore the form fields if they're in a conditional box and that box is hidden.
 			if ( element.parents( '.conditional' ).length == 1 && element.parents( '.conditional' ).is( ':hidden' ) ) { continue; }
-			
+
 			if ( element.length && element.is( 'input[type="radio"]' ) ) {
 				shortcode_atts += ' ' + prop + '="' + element.val() + '"';
 			}

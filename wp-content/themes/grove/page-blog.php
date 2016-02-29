@@ -13,7 +13,7 @@
 get_header(); ?>
 
 
-<?php	$banner = get_post_meta($post->ID, '_ignite_banner_size', true);
+<?php	$banner = get_post_meta($post->ID, '_grove_banner_size', true);
 $sidebar = get_post_meta($post->ID, '_grove_hide_sidebar', true);
 
 if (has_post_thumbnail()) {
@@ -22,7 +22,7 @@ if (has_post_thumbnail()) {
 			'title'	=> trim(strip_tags( get_the_title() )),
 		);
 
-if ($banner!='hide') { if ($banner=='large' OR $sidebar=='hide') { the_post_thumbnail('960', $attr); } else {$image = get_the_post_thumbnail($post->ID, '720', $attr);} } } ?>
+if ($banner!='hide') { if ($banner=='large' OR $sidebar=='hide') { the_post_thumbnail('full', $attr); } else {$image = get_the_post_thumbnail($post->ID, '1170', $attr);} } } ?>
 
 		<div id="primary" class="content-area <?php if ($sidebar=='hide'){ ?> full-page-primary <?php } ?>">
 			<div id="content" class="site-content <?php if ($sidebar=='hide'){ ?> full-page-content <?php } ?>" role="main">

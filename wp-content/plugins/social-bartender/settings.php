@@ -13,7 +13,7 @@ function sh_sb_settings_page(){
 	
 	<div class="wrap">
 		<?php screen_icon( 'plugins' ); ?>
-		<h2>Ignite360 Social</h2>
+		<h2>Social Bartender</h2>
 		
 		<div id="nav-menus-frame">
 		
